@@ -1,0 +1,49 @@
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: linkdexbot
+Disallow: /
+
+User-agent: meanpathbot
+Disallow: /
+
+User-agent: dotbot
+Disallow: /
+
+User-agent: Exabot
+Disallow: /
+
+User-agent: aiHitBot
+Disallow: /
+
+User-agent: SeznamBot
+Disallow: /
+
+User-agent: CrazyWebCrawler-Spider
+Disallow: /
+
+User-agent: SafeDNSBot
+Disallow: /
+
+User-agent: spbot
+Disallow: /
+
+User-agent: vebidoobot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: SemrushBot-SA
+Disallow: /
+
+User-agent: vebidoobot
+Disallow: /
+
+User-agent: *
+Disallow:
+
+Sitemap: https://iasi.digital/sitemap.xml
