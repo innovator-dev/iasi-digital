@@ -6,7 +6,7 @@
  * @link https://oras.digital
  * @link https://iasi.digital
  *
- * Copyright (c) 2023. Iași Digital [https://iasi.digital]
+ * @copyright (c) 2023. Iasi Digital [https://iasi.digital]
  */
 
 'use strict';
