@@ -178,6 +178,12 @@ const publicTransportation = (() => {
      */
     function render() {
 
+        // Populate routes
+        if (app.dataSets.publicTransportation.data.routes === undefined) {
+            populateRoutes();
+        }
+
+        // Render vehicles
         if (app.dataSets.publicTransportation.data.vehicles === undefined) {
 
             fetch(() => {
@@ -186,7 +192,12 @@ const publicTransportation = (() => {
         } else {
 
             app.dataSets.publicTransportation.data.vehicles.forEach((entry) => {
-                if (entry.latitude && entry.longitude && entry.route_id && app.dataSets.publicTransportation.data.routes[entry.route_id] !== undefined) {
+
+                // Calculate time since last update
+                let timeSinceLastUpdate = app.dateDiff(entry.timestamp);
+
+                // Validate entry
+                if (entry.latitude && entry.longitude && entry.route_id && app.dataSets.publicTransportation.data.routes[entry.route_id] !== undefined && timeSinceLastUpdate < 60) {
 
                     // Get matching route for current vehicle
                     let vehicleRoute = app.dataSets.publicTransportation.data.routes[entry.route_id].name,
@@ -201,7 +212,7 @@ const publicTransportation = (() => {
                         app.dataSets.publicTransportation.markers[entry.label]['lastUpdate'] = entry.timestamp;
 
                         app.dataSets.publicTransportation.markers[entry.label]['popup'] =
-                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${parseInt(vehicleRoute) >= 18 ? 'bus' : `line-${vehicleRoute}`} ic-mr-10">${vehicleRoute}</span>` : ''}${entry.label.substring(0, 1) === 'E' ? `<span class="label ic-mr-5 electric" data-icon="&#xe012;"></span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><p><strong>Ultima actualizare</strong>: acum ${app.dateDiff(entry.timestamp)} minute</p><p><strong>Cod identificare</strong>: ${entry.label}</p><p><strong>Viteză</strong>: ${entry.speed} km/h</p></main></div>`
+                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${parseInt(vehicleRoute) >= 18 ? 'bus' : `line-${vehicleRoute}`} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
                     } else {
 
                         app.dataSets.publicTransportation.markers[entry.label] = {
@@ -223,7 +234,7 @@ const publicTransportation = (() => {
                             }),
                             lastUpdate: entry.timestamp,
                             visible: true,
-                            popup: `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${parseInt(vehicleRoute) >= 18 ? 'bus' : `line-${vehicleRoute}`} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><p><strong>Ultima actualizare</strong>: acum ${app.dateDiff(entry.timestamp)} minute</p><p><strong>Cod identificare</strong>: ${entry.label}</p><p><strong>Viteză</strong>: ${entry.speed} km/h</p></main></div>`
+                            popup: `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${parseInt(vehicleRoute) >= 18 ? 'bus' : `line-${vehicleRoute}`} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${app.dateDiff(entry.timestamp)} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
                         };
 
                         app.dataSets.publicTransportation.markers[entry.label].ref.addListener('click', () => {
