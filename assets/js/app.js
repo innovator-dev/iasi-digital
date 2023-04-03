@@ -72,7 +72,7 @@ class Observer {
 
 /**
  * Iași Digital app.
- * @type {{dateDiff: ((function(*): (null|number))|*), route: (function(): {}), dataSets: {}, api: (function(string, string=, string=, Object=): Promise<Response>), cdn: string, map: {loaded: boolean, ref: null, popup: null, controls: {}, mapCenter: {lng: number, lat: number}}, render: render, events: Observer}}
+ * @type {{dateDiff: ((function(*): (number|null))|*), route: (function(): {}), dataSets: {}, api: (function(string, string=, string=, Object=): Promise<Response>), cdn: string, map: {loaded: boolean, ref: null, popup: null, controls: {}, mapCenter: {lng: number, lat: number}}, render: render, events: Observer}}
  */
 const app = (() => {
 
@@ -278,7 +278,7 @@ const app = (() => {
                             visible: false,
                             hasData: false,
                             updated: null,
-                            data: [],
+                            data: {},
                             markers: [],
                             selectedMarker: null
                         };
@@ -372,7 +372,7 @@ const app = (() => {
                                                         url: `${cdn}pin/me.png`,
                                                         size: new google.maps.Size(28, 44),
                                                         origin: new google.maps.Point(0, 0),
-                                                        anchor: new google.maps.Point(0, 44),
+                                                        anchor: new google.maps.Point(0, 22),
                                                         scaledSize: new google.maps.Size(28, 44)
                                                     }
                                                 });
