@@ -107,7 +107,7 @@ const publicTransportation = (() => {
         }
 
         // Setup default watcher
-        // Run public transportation marker rendering
+        // Run marker rendering
         app.dataSets.publicTransportation.watcher = setInterval(() => {
             if (callback !== null) {
                 callback();
@@ -121,7 +121,7 @@ const publicTransportation = (() => {
      */
     function init() {
 
-        // Fetch public transportation routes
+        // Fetch routes
         populateRoutes();
 
         setWatcher(60000, () => {
@@ -130,7 +130,7 @@ const publicTransportation = (() => {
     }
 
     /**
-     * Show public transportation markers on map.
+     * Show markers on map.
      */
     function show() {
 
@@ -138,7 +138,7 @@ const publicTransportation = (() => {
         render();
 
         // Setup watcher
-        // Run public transportation marker rendering every 20 seconds
+        // Run marker rendering
         setWatcher(20000, () => {
             fetch(() => {
                 render();
