@@ -127,7 +127,7 @@ const airQuality = (() => {
     }
 
     /**
-     * Show public transportation markers on map.
+     * Show markers on map.
      */
     function show() {
 
