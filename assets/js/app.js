@@ -370,10 +370,10 @@ const app = (() => {
                                                     title: 'Locația mea',
                                                     icon: {
                                                         url: `${cdn}pin/me.png`,
-                                                        size: new google.maps.Size(28, 44),
+                                                        // size: new google.maps.Size(28, 44),
                                                         origin: new google.maps.Point(0, 0),
                                                         anchor: new google.maps.Point(0, 22),
-                                                        scaledSize: new google.maps.Size(28, 44)
+                                                        scaledSize: new google.maps.Size(14, 22)
                                                     }
                                                 });
 

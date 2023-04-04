@@ -170,10 +170,10 @@ const wasteCollection = (() => {
                                     optimized: true,
                                     icon: {
                                         url: `${app.cdn}pin/environment/waste-collection/vehicle.png`,
-                                        size: new google.maps.Size(28, 44),
+                                        // size: new google.maps.Size(28, 44),
                                         origin: new google.maps.Point(0, 0),
                                         anchor: new google.maps.Point(0, 22),
-                                        scaledSize: new google.maps.Size(28, 44)
+                                        scaledSize: new google.maps.Size(14, 22)
                                     }
                                 }),
                                 lastUpdate: entry.LastRecordDT,

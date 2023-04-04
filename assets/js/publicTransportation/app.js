@@ -226,10 +226,10 @@ const publicTransportation = (() => {
                                 optimized: true,
                                 icon: {
                                     url: `${app.cdn}pin/mobility/public-transportation/${vehicleRoute !== null ? `${vehicleRoute}.png` : `${vehicleType === 0 ? 'tram' : 'bus'}.png`}`,
-                                    size: new google.maps.Size(28, 44),
+                                    // size: new google.maps.Size(28, 44),
                                     origin: new google.maps.Point(0, 0),
-                                    anchor: new google.maps.Point(0, 44),
-                                    scaledSize: new google.maps.Size(28, 44)
+                                    anchor: new google.maps.Point(0, 22),
+                                    scaledSize: new google.maps.Size(14, 22)
                                 }
                             }),
                             lastUpdate: entry.timestamp,
