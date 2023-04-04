@@ -456,114 +456,121 @@ const app = (() => {
             const mapDiv = document.querySelector('#map');
             if (mapDiv) {
 
-                load(`https://maps.googleapis.com/maps/api/js?key=AIzaSyCROMAwC1vIjc7E9l8-kJ96vHd-ujOSGlQ`, () => {
+                // Get dataset
+                const mapAttr = mapDiv.dataset;
+                if (mapAttr.bind) {
+                    // Decode URL
+                    const mapUrl = JSON.parse(atob(mapAttr.bind));
 
-                    map.ref = new google.maps.Map(mapDiv, {
-                        center: map.mapCenter,
-                        zoom: 14,
-                        streetViewControl: false,
-                        mapTypeControl: false,
-                        fullscreenControl: false,
-                        styles: [
-                            {
-                                "featureType": "administrative",
-                                "elementType": "labels.text.fill",
-                                "stylers": [
-                                    {
-                                        "color": "#444444"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "landscape",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "color": "#f2f2f2"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "poi",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "visibility": "on"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "poi.business",
-                                "elementType": "geometry.fill",
-                                "stylers": [
-                                    {
-                                        "visibility": "off"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "road",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "saturation": -100
-                                    },
-                                    {
-                                        "lightness": 45
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "road.highway",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "visibility": "simplified"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "road.arterial",
-                                "elementType": "labels.icon",
-                                "stylers": [
-                                    {
-                                        "visibility": "on"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "transit",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "visibility": "on"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "water",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "color": "#b4d4e1"
-                                    },
-                                    {
-                                        "visibility": "on"
-                                    }
-                                ]
-                            }
-                        ]
+                    load(mapUrl.url, () => {
+
+                        map.ref = new google.maps.Map(mapDiv, {
+                            center: map.mapCenter,
+                            zoom: 14,
+                            streetViewControl: false,
+                            mapTypeControl: false,
+                            fullscreenControl: false,
+                            styles: [
+                                {
+                                    "featureType": "administrative",
+                                    "elementType": "labels.text.fill",
+                                    "stylers": [
+                                        {
+                                            "color": "#444444"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "featureType": "landscape",
+                                    "elementType": "all",
+                                    "stylers": [
+                                        {
+                                            "color": "#f2f2f2"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "featureType": "poi",
+                                    "elementType": "all",
+                                    "stylers": [
+                                        {
+                                            "visibility": "on"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "featureType": "poi.business",
+                                    "elementType": "geometry.fill",
+                                    "stylers": [
+                                        {
+                                            "visibility": "off"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "featureType": "road",
+                                    "elementType": "all",
+                                    "stylers": [
+                                        {
+                                            "saturation": -100
+                                        },
+                                        {
+                                            "lightness": 45
+                                        }
+                                    ]
+                                },
+                                {
+                                    "featureType": "road.highway",
+                                    "elementType": "all",
+                                    "stylers": [
+                                        {
+                                            "visibility": "simplified"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "featureType": "road.arterial",
+                                    "elementType": "labels.icon",
+                                    "stylers": [
+                                        {
+                                            "visibility": "on"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "featureType": "transit",
+                                    "elementType": "all",
+                                    "stylers": [
+                                        {
+                                            "visibility": "on"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "featureType": "water",
+                                    "elementType": "all",
+                                    "stylers": [
+                                        {
+                                            "color": "#b4d4e1"
+                                        },
+                                        {
+                                            "visibility": "on"
+                                        }
+                                    ]
+                                }
+                            ]
+                        });
+
+                        google.maps.event.addListenerOnce(map.ref, 'tilesloaded', () => {
+
+                            // Mark map as loaded
+                            map.loaded = true;
+
+                            // Show map controls
+                            events.fire('mapRenderControls');
+                        });
                     });
-
-                    google.maps.event.addListenerOnce(map.ref, 'tilesloaded', () => {
-
-                        // Mark map as loaded
-                        map.loaded = true;
-
-                        // Show map controls
-                        events.fire('mapRenderControls');
-                    });
-                });
+                }
             }
         });
 
