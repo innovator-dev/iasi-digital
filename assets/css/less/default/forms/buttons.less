@@ -1,0 +1,47 @@
+/*
+ * Iași Digital
+ * A data-driven perspective of the city.
+ *
+ * @author Innovator Dev <hello@innovator.dev>
+ * @link https://oras.digital
+ * @link https://iasi.digital
+ *
+ * @copyright (c) 2023. Iasi Digital [https://iasi.digital]
+ */
+
+// Simple button mixin
+.simple-button (@textColor, @backgroundColor, @backgroundColorHover) {
+  background-color: @backgroundColor;
+  color: @textColor;
+
+  &:hover {
+    background-color: @backgroundColorHover;
+    color: @textColor;
+  }
+}
+
+// Button mixin
+.define-button (@textColor, @textColorHover, @backgroundColor, @backgroundColorHover) {
+  background-color: @backgroundColor;
+  color: @textColor;
+
+  &:hover,
+  &.active {
+    background-color: @backgroundColorHover;
+    color: @textColorHover;
+  }
+}
+
+// Bordered button mixin
+.define-border-button (@textColor, @textColorHover, @backgroundColor, @backgroundColorHover, @borderColor, @borderColorHover) {
+  background-color: @backgroundColor;
+  border-color: @borderColor;
+  color: @textColor;
+
+  &:hover,
+  &.active {
+    background-color: @backgroundColorHover;
+    border-color: @borderColorHover;
+    color: @textColorHover;
+  }
+}

@@ -1,0 +1,247 @@
+/*
+ * Iași Digital
+ * A data-driven perspective of the city.
+ *
+ * @author Innovator Dev <hello@innovator.dev>
+ * @link https://oras.digital
+ * @link https://iasi.digital
+ *
+ * @copyright (c) 2023. Iasi Digital [https://iasi.digital]
+ */
+
+#map {
+  .grid(10.5);
+  margin: auto;
+
+  min-height: 500px;
+  padding: 0 15px;
+
+  border: 1px solid var(--map-border-color);
+  border-radius: .25em;
+
+  @media (min-width: @mediaQueryMedium) {
+    .grid;
+    min-height: 650px;
+    height: 100%;
+    padding: 0;
+
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+  }
+
+  // Google map rendering container
+  .googleMap {
+
+    .grid;
+    height: 100%;
+    min-height: 450px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, .4);
+
+    @media (min-width: @mediaQueryMedium) {
+      min-height: 650px;
+      box-shadow: none;
+    }
+  }
+}
+
+#mapPopup {
+  display: flex;
+  flex-flow: column nowrap;
+
+  width: 200px;
+  padding: 6px 0;
+
+  // Popup header
+  & > header {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+
+    // Headings
+    h5 {
+      font-weight: 500;
+      font-size: 1.3em;
+      padding: 0;
+      margin: 0;
+    }
+
+    h6 {
+      font-width: 500;
+      font-size: 1em;
+      margin: 0 auto .25em;
+      padding: 0;
+    }
+
+    // Vehicle type{
+    span.vehicle-type {
+      font-size: 1em;
+    }
+
+    // Label
+    .label {
+      display: inline-block;
+      font-weight: 400;
+      border-radius: .25em;
+    }
+
+    // Route number label
+    span.route {
+      color: var(--text-color-white);
+
+      padding: 4px 8px;
+      background-color: var(--route);
+
+      &.route-1 {
+        background-color: var(--route-1);
+      }
+
+      &.route-3 {
+        background-color: var(--route-3);
+      }
+
+      &.route-5 {
+        background-color: var(--route-5);
+      }
+
+      &.route-6 {
+        background-color: var(--route-6);
+        color: var(--text-color);
+      }
+
+      &.route-7 {
+        background-color: var(--route-7);
+      }
+
+      &.route-8 {
+        background-color: var(--route-8);
+        color: var(--text-color);
+      }
+
+      &.route-9 {
+        background-color: var(--route-9);
+      }
+
+      &.route-11 {
+        background-color: var(--route-11);
+      }
+
+      &.route-13 {
+        background-color: var(--route-13);
+      }
+    }
+
+    // AQI colors
+    span.aqi {
+      display: inline-block;
+
+      font-weight: 400;
+      border-radius: .25em;
+      color: var(--text-color-white);
+
+      padding: 4px 8px;
+
+      &.aqi-good {
+        background-color: var(--aqi-good);
+      }
+
+      &.aqi-moderate {
+        background-color: var(--aqi-moderate);
+        color: var(--text-color);
+      }
+
+      &.aqi-unhealthy-sensitive {
+        background-color: var(--aqi-unhealthy-sensitive);
+      }
+
+      &.aqi-unhealthy {
+        background-color: var(--aqi-unhealthy);
+      }
+
+      &.aqi-very-unhealthy {
+        background-color: var(--aqi-very-unhealthy);
+      }
+
+      &.aqi-hazardous {
+        background-color: var(--aqi-hazardous);
+      }
+    }
+  }
+
+  & > main {
+    margin: 10px 0 0;
+
+    // Headings
+    h6 {
+      font-width: 500;
+      font-size: 1em;
+      margin: 1em auto .25em;
+      padding: 0;
+    }
+  }
+}
+
+// Map Controls
+.mapControls {
+
+  .grid;
+  padding: 20px;
+
+  @media (min-width: @mediaQueryMedium) {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    width: 30%;
+
+    padding: 15px;
+    border-radius: .25em;
+    box-shadow: 0 0 2px rgba(0, 0, 0, .2);
+
+    background-color: var(--map-controls-background-color);
+
+    &:hover {
+      background-color: var(--map-controls-background-color-hover);
+    }
+  }
+
+  @media (min-width: @mediaQueryLarge) {
+    width: 25%;
+  }
+
+  @media (min-width: @mediaQueryExtraLarge) {
+    width: 20%;
+  }
+
+  ul {
+    li {
+      margin: 10px 0 0;
+
+      &:nth-child(1) {
+        margin: 0;
+      }
+    }
+  }
+
+  h3 {
+    display: block;
+    text-transform: uppercase;
+    margin: 0 0 14px;
+    font-weight: 500;
+    font-size: 1em;
+
+    .spinner {
+      position: absolute;
+      top: -20px;
+      right: -20px;
+
+      width: 20px;
+      height: 20px;
+
+      border-width: 1px;
+    }
+  }
+}

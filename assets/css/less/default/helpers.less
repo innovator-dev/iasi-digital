@@ -1,0 +1,103 @@
+/*
+ * Iași Digital
+ * A data-driven perspective of the city.
+ *
+ * @author Innovator Dev <hello@innovator.dev>
+ * @link https://oras.digital
+ * @link https://iasi.digital
+ *
+ * @copyright (c) 2023. Iasi Digital [https://iasi.digital]
+ */
+
+// Text hide
+.text-hide {
+  font: ~"0/0" a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+
+// Show/Hide
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+// Floats
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
+// Text alignment
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-upper {
+  text-transform: uppercase;
+}
+
+.text-lower {
+  text-transform: lowercase;
+}
+
+.text-cap {
+  text-transform: capitalize;
+}
+
+.text-colored {
+  color: var(--color);
+}
+
+// Loading spinner
+// Spinner
+.spinner {
+  width: 48px;
+  height: 48px;
+  clear: both;
+  margin: 2em auto;
+  border-radius: 50%;
+
+  -webkit-animation: circleRotation .5s infinite linear;
+  animation: circleRotation .5s infinite linear;
+
+  border: 2px var(--logo-color) solid;
+  border-top: 2px transparent solid;
+
+  &.spinner-sm {
+    width: 32px;
+    height: 32px;
+
+    border-width: 1px;
+    margin: 0 auto;
+  }
+
+  &.spinner-no-margin {
+    margin: 0;
+  }
+}
+
+@-webkit-keyframes circleRotation {
+  from {
+    -webkit-transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(359deg);
+  }
+}

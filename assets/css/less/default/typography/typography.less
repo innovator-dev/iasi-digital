@@ -1,0 +1,170 @@
+/*
+ * Iași Digital
+ * A data-driven perspective of the city.
+ *
+ * @author Innovator Dev <hello@innovator.dev>
+ * @link https://oras.digital
+ * @link https://iasi.digital
+ *
+ * @copyright (c) 2023. Iasi Digital [https://iasi.digital]
+ */
+
+*,
+:before,
+:after {
+  box-sizing: border-box;
+}
+
+:invalid {
+  box-shadow: none; /* FF */
+  outline: 0; /* IE 10 */
+}
+
+// Custom scrollBar
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px #3e77bb;
+}
+
+::-webkit-scrollbar-thumb {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+  background: var(--logo-color);
+}
+
+::-webkit-scrollbar-thumb:window-inactive {
+  background: var(--background-color);
+}
+
+html {
+  scroll-behavior: smooth;
+
+  @media (orientation: portrait) {
+    height: 100%;
+  }
+
+  @media (orientation: landscape) and (min-device-width: 768px) {
+    height: 100%;
+  }
+
+  /*@media (min-width: 320px) {
+    background: url(@cover-sm) no-repeat right center;
+    background-size: cover;
+  }*/
+
+  @media (min-width: @mediaQueryMedium) {
+    // background: url(@cover) no-repeat center center;
+    // background-size: cover;
+    // iPad
+    @media (-webkit-min-device-pixel-ratio: 2) {
+    }
+
+    // iPhone X
+    @media (-webkit-device-pixel-ratio: 3) {
+
+      // iPhone X left/right padding when in landscape
+      @media (orientation: landscape) {
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      }
+    }
+  }
+}
+
+body {
+  background-color: var(--background-color);
+
+  font: 400 16px/1.6 'Rubik', Tahoma, Arial, sans-serif;
+  color: var(--text-color);
+  text-rendering: optimizeLegibility;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, .01);
+
+  -webkit-font-smoothing: subpixel-antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--text-color);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--text-color);
+    outline: 0;
+  }
+
+  &:active {
+    outline: 0;
+  }
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Rubik', Arial, sans-serif;
+  font-weight: 400;
+  margin: 0;
+
+  text-align: center;
+
+  @media (min-width: @mediaQueryMedium) {
+    text-align: left;
+  }
+}
+
+// Headings
+h1 {
+  font-size: 1.6em;
+  line-height: 1.45em;
+}
+
+h2 {
+  font-size: 1.45em;
+  line-height: 1.22em;
+}
+
+h3 {
+  font-size: 1.22em;
+}
+
+h4 {
+  font-size: 1.06em;
+}
+
+p {
+  padding: 0;
+  margin: 0;
+}
+
+ul, ol {
+  padding: 0;
+  margin: 0;
+
+  list-style: none;
+}
+
+img {
+  vertical-align: middle;
+}
+
+picture {
+  display: block;
+  position: relative;
+}
+
+input, button, label, textarea {
+  font-family: 'Rubik', Arial, sans-serif;
+  font-weight: 400;
+  margin: 0;
+}
+
+hr {
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+
+  &.hr-clean {
+    flex-basis: 100%;
+    border: 0;
+  }
+}

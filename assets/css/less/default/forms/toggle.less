@@ -1,0 +1,55 @@
+/*
+ * Iași Digital
+ * A data-driven perspective of the city.
+ *
+ * @author Innovator Dev <hello@innovator.dev>
+ * @link https://oras.digital
+ * @link https://iasi.digital
+ *
+ * @copyright (c) 2023. Iasi Digital [https://iasi.digital]
+ */
+
+// Toggle button
+.btn-toggle {
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 2.6em;
+  min-width: 2.6em;
+  height: 1.4em;
+  background: #ddd;
+  border-radius: 3em;
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transition: all .2s ease-in-out;
+  border: none;
+
+  &:after {
+
+    position: absolute;
+    content: '';
+    width: 1.4em;
+    height: 1.4em;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 .25em rgba(0, 0, 0, .3);
+    transform: scale(.7);
+    left: 0;
+    -webkit-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+  }
+
+  &:checked {
+    background: var(--toggle-background-color);
+
+    &:after {
+      left: 45%;
+    }
+  }
+
+  &:disabled {
+    background: var(--toggle-disabled-background-color);
+  }
+}

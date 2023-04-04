@@ -1,0 +1,57 @@
+/*
+ * Iași Digital
+ * A data-driven perspective of the city.
+ *
+ * @author Innovator Dev <hello@innovator.dev>
+ * @link https://oras.digital
+ * @link https://iasi.digital
+ *
+ * @copyright (c) 2023. Iasi Digital [https://iasi.digital]
+ */
+
+// Header
+header {
+  padding: 2em 0;
+
+  @media (min-width: @mediaQueryMedium) {
+    padding: 3em 0;
+  }
+
+  // Container
+  .container {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+
+    @media (min-width: @mediaQuerySmall) {
+      flex-flow: row nowrap;
+      justify-content: flex-start;
+    }
+
+    // Logo
+    .logo {
+      margin: auto;
+
+      @media (min-width: @mediaQueryMedium) {
+        margin: 0;
+      }
+
+      h1 {
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+
+        font-size: 2.15em;
+        font-weight: 400;
+        text-transform: uppercase;
+        color: var(--logo-color);
+
+        strong {
+          font-size: 1.4em;
+          font-weight: 600;
+        }
+      }
+
+    }
+  }
+}
