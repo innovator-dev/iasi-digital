@@ -107,7 +107,7 @@ const app = (() => {
      * CDN url.
      * @type {string}
      */
-    const cdn = 'https://s3.iasi.digital/';
+    const cdn = 'https://iasi.digital/assets/';
 
     /**
      * Calculate date difference between given date and current and returns difference in minutes.
