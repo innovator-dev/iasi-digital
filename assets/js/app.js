@@ -245,7 +245,7 @@ const app = (() => {
 
                 // Populate map controls
                 map.controls = {
-                    spinner: mapControls.querySelector('h5 .spinner'),
+                    spinner: mapControls.querySelector('h3 .spinner'),
 
                     // My location
                     myLocation: mapControls.querySelector('input[type=checkbox][name="toggle.myLocation"]'),
@@ -370,10 +370,10 @@ const app = (() => {
                                                     title: 'Locația mea',
                                                     icon: {
                                                         url: `${cdn}pin/me.png`,
-                                                        // size: new google.maps.Size(28, 44),
+                                                        size: new google.maps.Size(28, 44),
                                                         origin: new google.maps.Point(0, 0),
                                                         anchor: new google.maps.Point(0, 22),
-                                                        scaledSize: new google.maps.Size(14, 22)
+                                                        scaledSize: new google.maps.Size(28, 44)
                                                     }
                                                 });
 

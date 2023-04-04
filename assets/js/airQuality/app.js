@@ -221,10 +221,10 @@ const airQuality = (() => {
                                         strokeOpacity: .3,
                                         strokeWeight: 1,
                                         fillColor: aqi.color,
-                                        fillOpacity: .5,
+                                        fillOpacity: .4,
                                         map: app.map.ref,
                                         center: {lat: parseFloat(entry.latitude), lng: parseFloat(entry.longitude)},
-                                        radius: 125
+                                        radius: 150
                                     }) : null,
                                 lastUpdate: entry.timelast,
                                 visible: true,

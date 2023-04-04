@@ -197,7 +197,7 @@ const publicTransportation = (() => {
                 let timeSinceLastUpdate = app.dateDiff(entry.timestamp);
 
                 // Validate entry
-                if (entry.latitude && entry.longitude && entry.route_id && app.dataSets.publicTransportation.data.routes[entry.route_id] !== undefined && timeSinceLastUpdate < 60) {
+                if (entry.latitude && entry.longitude && entry.route_id !== undefined && app.dataSets.publicTransportation.data.routes[entry.route_id] !== undefined && timeSinceLastUpdate < 60) {
 
                     // Get matching route for current vehicle
                     let vehicleRoute = app.dataSets.publicTransportation.data.routes[entry.route_id].name,
@@ -212,7 +212,7 @@ const publicTransportation = (() => {
                         app.dataSets.publicTransportation.markers[entry.label]['lastUpdate'] = entry.timestamp;
 
                         app.dataSets.publicTransportation.markers[entry.label]['popup'] =
-                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${parseInt(vehicleRoute) >= 18 ? 'bus' : `line-${vehicleRoute}`} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
+                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${app.dateDiff(entry.timestamp)} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
                     } else {
 
                         app.dataSets.publicTransportation.markers[entry.label] = {
@@ -226,15 +226,15 @@ const publicTransportation = (() => {
                                 optimized: true,
                                 icon: {
                                     url: `${app.cdn}pin/mobility/public-transportation/${vehicleRoute !== null ? `${vehicleRoute}.png` : `${vehicleType === 0 ? 'tram' : 'bus'}.png`}`,
-                                    // size: new google.maps.Size(28, 44),
+                                    size: new google.maps.Size(28, 44),
                                     origin: new google.maps.Point(0, 0),
                                     anchor: new google.maps.Point(0, 22),
-                                    scaledSize: new google.maps.Size(14, 22)
+                                    scaledSize: new google.maps.Size(28, 44)
                                 }
                             }),
                             lastUpdate: entry.timestamp,
                             visible: true,
-                            popup: `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${parseInt(vehicleRoute) >= 18 ? 'bus' : `line-${vehicleRoute}`} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${app.dateDiff(entry.timestamp)} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
+                            popup: `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${app.dateDiff(entry.timestamp)} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
                         };
 
                         app.dataSets.publicTransportation.markers[entry.label].ref.addListener('click', () => {
