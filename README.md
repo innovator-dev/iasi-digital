@@ -1,2 +1,2 @@
-# iasi-digital
-Use case of using open data (public transportation, air quality) for Iași
+# Iași Digital
+A data perspective over Iași by integrating several open-data sets.
