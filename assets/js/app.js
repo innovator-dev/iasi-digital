@@ -125,9 +125,7 @@ const app = (() => {
 
         // UTC date?
         if (utc) {
-            let currDate = new Date();
-            let currentDate = Date.UTC(currDate.getUTCFullYear(), currDate.getUTCMonth(),
-                currDate.getUTCDate(), currDate.getUTCHours(), currDate.getUTCMinutes(), currDate.getUTCSeconds());
+            currentDate = new Date(currentDate.getTime() + currentDate.getTimezoneOffset() * 60000)
         }
 
         // Parsed date
@@ -138,7 +136,7 @@ const app = (() => {
         }
 
         // Calculate date difference
-        const difference = Math.abs(currentDateUTC.getTime() - parsedDate.getTime());
+        const difference = Math.abs(currentDate.getTime() - parsedDate.getTime());
         return Math.floor(difference / 1000 / 60);
     }
 
