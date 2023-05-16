@@ -112,22 +112,33 @@ const app = (() => {
     /**
      * Calculate date difference between given date and current and returns difference in minutes.
      * @param date Date to compare with current timestamp
+     * @param utc (Optional) Flag to calculate date difference in UTC
      * @returns {number|null}
      */
-    function dateDiff(date) {
+    function dateDiff(date, utc = false) {
 
         // Normalize date to local time
         let b = date.split(/\D/);
 
-        let parsedDate1 = new Date();
-        let parsedDate2 = new Date(b[0], b[1] - 1, b[2], b[3], b[4], b[5]);
+        // Get current date/time in UTC
+        let currentDate = new Date();
 
-        if (isNaN(parsedDate1) || isNaN(parsedDate2)) {
+        // UTC date?
+        if (utc) {
+            let currDate = new Date();
+            let currentDate = Date.UTC(currDate.getUTCFullYear(), currDate.getUTCMonth(),
+                currDate.getUTCDate(), currDate.getUTCHours(), currDate.getUTCMinutes(), currDate.getUTCSeconds());
+        }
+
+        // Parsed date
+        let parsedDate = new Date(b[0], b[1] - 1, b[2], b[3], b[4], b[5]);
+
+        if (isNaN(currentDate) || isNaN(parsedDate)) {
             return null;
         }
 
         // Calculate date difference
-        const difference = Math.abs(parsedDate1.getTime() - parsedDate2.getTime());
+        const difference = Math.abs(currentDateUTC.getTime() - parsedDate.getTime());
         return Math.floor(difference / 1000 / 60);
     }
 

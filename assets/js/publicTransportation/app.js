@@ -194,7 +194,7 @@ const publicTransportation = (() => {
             app.dataSets.publicTransportation.data.vehicles.forEach((entry) => {
 
                 // Calculate time since last update
-                let timeSinceLastUpdate = app.dateDiff(entry.timestamp);
+                let timeSinceLastUpdate = app.dateDiff(entry.timestamp, true);
 
                 // Validate entry
                 if (entry.latitude && entry.longitude && entry.route_id !== undefined && app.dataSets.publicTransportation.data.routes[entry.route_id] !== undefined && timeSinceLastUpdate < 60) {
@@ -212,7 +212,7 @@ const publicTransportation = (() => {
                         app.dataSets.publicTransportation.markers[entry.label]['lastUpdate'] = entry.timestamp;
 
                         app.dataSets.publicTransportation.markers[entry.label]['popup'] =
-                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${app.dateDiff(entry.timestamp)} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
+                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
                     } else {
 
                         app.dataSets.publicTransportation.markers[entry.label] = {
@@ -234,7 +234,7 @@ const publicTransportation = (() => {
                             }),
                             lastUpdate: entry.timestamp,
                             visible: true,
-                            popup: `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${app.dateDiff(entry.timestamp)} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
+                            popup: `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
                         };
 
                         app.dataSets.publicTransportation.markers[entry.label].ref.addListener('click', () => {
