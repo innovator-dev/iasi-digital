@@ -20,7 +20,7 @@ const wasteCollection = (() => {
      * Data Set url.
      * @type {string}
      */
-    const url = 'https://opendata.oras.digital/public-api/proxy/';
+    const url = 'https://opendata.oras.digital/api/proxy/';
 
     /**
      * Perform fetch request to API.
