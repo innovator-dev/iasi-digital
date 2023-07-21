@@ -261,6 +261,7 @@ const app = (() => {
 
                     // Mobility
                     publicTransportation: mapControls.querySelector('input[type=checkbox][name="toggle.mobility.publicTransportation"]'),
+                    publicParking: mapControls.querySelector('input[type=checkbox][name="toggle.mobility.publicParking"]'),
                     trafficLayer: mapControls.querySelector('input[type=checkbox][name="toggle.mobility.trafficLayer"]'),
 
                     // Environment
