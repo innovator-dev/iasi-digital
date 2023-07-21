@@ -170,6 +170,26 @@
         background-color: var(--aqi-hazardous);
       }
     }
+
+    // Parking places
+    span.parking {
+      color: var(--text-color-white);
+
+      padding: 4px 8px;
+      background-color: var(--route);
+
+      &.parking-1 {
+        background-color: var(--parking-available);
+      }
+
+      &.parking-2 {
+        background-color: var(--parking-occupied);
+      }
+
+      &.parking-3 {
+        background-color: var(--parking-reserved);
+      }
+    }
   }
 
   & > main {
