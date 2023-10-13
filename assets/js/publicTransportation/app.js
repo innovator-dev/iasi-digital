@@ -181,11 +181,15 @@ const publicTransportation = (() => {
         // Populate routes
         if (app.dataSets.publicTransportation.data.routes === undefined) {
             populateRoutes();
+
+            // Update routes every 60 seconds
+            setInterval(() => {
+                populateRoutes();
+            }, 60000);
         }
 
         // Render vehicles
         if (app.dataSets.publicTransportation.data.vehicles === undefined) {
-
             fetch(() => {
                 render();
             });
@@ -228,7 +232,7 @@ const publicTransportation = (() => {
                                     url: `${app.cdn}pin/public-transportation/${vehicleRoute !== null ? `${vehicleRoute}.png` : `${vehicleType === 0 ? 'tram' : 'bus'}.png`}`,
                                     size: new google.maps.Size(28, 44),
                                     origin: new google.maps.Point(0, 0),
-                                    anchor: new google.maps.Point(0, 44),
+                                    anchor: new google.maps.Point(0, 22),
                                     scaledSize: new google.maps.Size(28, 44)
                                 }
                             }),

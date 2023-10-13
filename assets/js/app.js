@@ -382,7 +382,7 @@ const app = (() => {
                                                         url: `${cdn}pin/me.png`,
                                                         size: new google.maps.Size(28, 44),
                                                         origin: new google.maps.Point(0, 0),
-                                                        anchor: new google.maps.Point(0, 44),
+                                                        anchor: new google.maps.Point(0, 22),
                                                         scaledSize: new google.maps.Size(28, 44)
                                                     }
                                                 });
