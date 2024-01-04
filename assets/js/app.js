@@ -6,7 +6,7 @@
  * @link https://oras.digital
  * @link https://iasi.digital
  *
- * @copyright (c) 2023. Iasi Digital [https://iasi.digital]
+ * @copyright (c) Iasi Digital [https://iasi.digital]
  */
 
 'use strict';
@@ -96,6 +96,7 @@ const app = (() => {
         // Map configuration
         ref: null,
         mapCenter: {lat: 47.1553424, lng: 27.585645},
+        myLocation: {lat: 0, lng: 0},
         loaded: false,
         popup: null,
 
@@ -258,6 +259,7 @@ const app = (() => {
 
                     // My location
                     myLocation: mapControls.querySelector('input[type=checkbox][name="toggle.myLocation"]'),
+                    myLocationPrecise: mapControls.querySelector('.btn-precise-location'),
 
                     // Mobility
                     publicTransportation: mapControls.querySelector('input[type=checkbox][name="toggle.mobility.publicTransportation"]'),
@@ -272,6 +274,22 @@ const app = (() => {
 
                 // Show map controls panel
                 mapControls.classList.remove('hide');
+
+                // Show my precise location
+                if (map.controls.myLocationPrecise) {
+                    map.controls.myLocationPrecise.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        if (map.myLocation.lat > 0 && map.myLocation.lng > 0) {
+                            // map.ref.setZoom(16);
+                            map.ref.panTo(new google.maps.LatLng(
+                                map.myLocation.lat,
+                                map.myLocation.lng
+                            ));
+                        }
+                    });
+                }
 
                 // Populate map controls
                 const dataSetToggle = mapControls.querySelectorAll('.btn-toggle');
@@ -329,7 +347,7 @@ const app = (() => {
                         }
 
                         // Traffic layer
-                        else if (dataAttr.set === 'trafficLayer') {
+                        if (dataAttr.set === 'trafficLayer') {
 
                             // Enable
                             toggle.addEventListener('click', () => {
@@ -365,13 +383,22 @@ const app = (() => {
 
                                     // Get input state
                                     const toggleChecked = map.controls[dataAttr.set].checked;
+
                                     if (toggleChecked) {
+
+                                        // Show precise location button
+                                        map.controls.myLocationPrecise.classList.remove('hide');
+
                                         // Show my location
                                         dataSets[dataAttr.set].watcher = navigator.geolocation.watchPosition((position) => {
 
                                             // Get coordinates
                                             const lat = position.coords.latitude,
                                                 lng = position.coords.longitude;
+
+                                            // Store coordinates
+                                            map.myLocation.lat = lat;
+                                            map.myLocation.lng = lng;
 
                                             if (dataSets[dataAttr.set].app === null) {
                                                 dataSets[dataAttr.set].app = new google.maps.Marker({
@@ -395,9 +422,6 @@ const app = (() => {
                                             dataSets[dataAttr.set].lastUpdate = new Date().getTime();
                                             dataSets[dataAttr.set].visible = true;
 
-                                            map.ref.panTo(new google.maps.LatLng(lat, lng));
-                                            map.ref.setZoom(16);
-
                                         }, () => {
 
                                             map.controls[dataAttr.set].checked = false;
@@ -418,14 +442,18 @@ const app = (() => {
                                             dataSets[dataAttr.set].lastUpdate = null;
                                             dataSets[dataAttr.set].visible = false;
 
-                                            // Center back
-                                            map.ref.setZoom(14);
-                                            map.ref.panTo(new google.maps.LatLng(app.map.mapCenter));
+                                            // Reset my location
+                                            map.myLocation.lat = 0;
+                                            map.myLocation.lng = 0;
+
+                                            // Hide precise location button
+                                            map.controls.myLocationPrecise.classList.add('hide');
 
                                             // Show warning...
                                             // ToDo
                                         }, {enableHighAccuracy: true, timeout: 5000});
                                     } else {
+
                                         // Hide my location
                                         // Clear marker
                                         if (dataSets[dataAttr.set].app !== null) {
@@ -443,9 +471,12 @@ const app = (() => {
                                         dataSets[dataAttr.set].lastUpdate = null;
                                         dataSets[dataAttr.set].visible = false;
 
-                                        // Center back
-                                        map.ref.setZoom(14);
-                                        map.ref.panTo(new google.maps.LatLng(app.map.mapCenter));
+                                        // Reset my location
+                                        map.myLocation.lat = 0;
+                                        map.myLocation.lng = 0;
+
+                                        // Hide precise location button
+                                        map.controls.myLocationPrecise.classList.add('hide');
                                     }
 
                                     map.controls.spinner.classList.add('hide');
