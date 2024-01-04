@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
-    <link href="https://opendata.oras.digital" rel="preconnect"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-    <link href="https://iasi.digital/favicon.ico" rel="icon" sizes="48x48"/><link href="https://iasi.digital/app.icon/196.png" rel="shortcut icon" sizes="196x196"/><link href="https://iasi.digital/app.icon/196.png" rel="apple-touch-icon"/>
-    <link href="https://iasi.digital/" rel="canonical"/>
-    <title>Iași Digital</title>
-    <meta content="Explorează Iașul dintr-o perspectivă bazată pe date deschise, accesează date și informații relevante privind calitatea vieții, transportul public și activitățiile locale." name="description"/>
-    <meta content="index,follow" name="robots"/>
-    <link as="style" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap" rel="preload"/>
-    <link as="style" href="https://iasi.digital/assets/css/app.css" rel="preload"/>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://iasi.digital/assets/css/app.css"/>
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
+  <link href="https://opendata.oras.digital" rel="preconnect"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link as="style" href="https://iasi.digital/assets/css/app.css" rel="preload"/><link as="style" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap" rel="preload"/>
+  <link href="https://iasi.digital/favicon.ico" rel="icon" sizes="48x48"/><link href="https://iasi.digital/app.icon/196.png" rel="shortcut icon" sizes="196x196"/><link href="https://iasi.digital/app.icon/196.png" rel="apple-touch-icon"/>
+  <link href="https://iasi.digital/" rel="canonical"/>
+  <title>Iași Digital</title>
+  <meta content="Explorează Iașul digital, dintr-o perspectivă bazată pe date deschise (open data), accesează date și informații relevante privind calitatea vieții, transportul public și sistemul de parcări." name="description"/>
+  <meta content="index,follow" name="robots"/>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://iasi.digital/assets/css/app.css"/>
 </head>
 <body class="page home-page">
 <header><div class="container"><a href="https://iasi.digital" class="logo na" title="Iași Digital"><h1><strong>Iași</strong> Digital</h1></a></div></header>
@@ -55,6 +54,7 @@
                     <div class="form-group form-group-inline form-group-centered fgi-separator fgi-start fqi-as-row">
                         <input class="btn-toggle ic-mr-10" id="toggle.myLocation" name="toggle.myLocation" type="checkbox" data-set="myLocation"/>
                         <label class="form-label form-label-inline" for="toggle.myLocation" title="Afișează locația mea"> Afișează locația mea</label>
+                        <button class="btn btn-sm btn-clear btn-precise-location hide"><span data-icon="&#xe013;"></span></button>
                     </div>
                 </li>
             </ul>
@@ -62,5 +62,5 @@
     </div>
 </main>
 </body>
-<script src="https://iasi.digital/assets/js/app.js"></script>
+<script src="https://iasi.digital/assets/js/app.min.js"></script>
 </html>
