@@ -105,6 +105,17 @@ const app = (() => {
     };
 
     /**
+     * My Location.
+     * @type {{app: null, watcher: null, visible: boolean, updated: null}}
+     */
+    const my = {
+        app: null,
+        watcher: null,
+        visible: false,
+        updated: null
+    };
+
+    /**
      * CDN url.
      * @type {string}
      */
@@ -253,13 +264,158 @@ const app = (() => {
             const mapControls = document.querySelector('.mapControls');
             if (mapControls && map.loaded) {
 
+                // Create center map control
+                const centerMapControlContainer = document.createElement('div');
+                const centerMapControl = document.createElement('button');
+                centerMapControl.classList.add('mapCustomControl');
+                centerMapControl.innerHTML = `<span data-icon="&#xe013;"></span>`;
+                centerMapControl.title = `Centrează harta pe Municipiul Iași`;
+                centerMapControl.type = 'button';
+
+                centerMapControl.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (map.mapCenter.lat > 0 && map.mapCenter.lng > 0) {
+                        // Center map
+                        map.ref.panTo(new google.maps.LatLng(
+                            map.mapCenter.lat,
+                            map.mapCenter.lng
+                        ));
+                    }
+                });
+
+                // Append to container
+                centerMapControlContainer.appendChild(centerMapControl);
+
+                // Create my location control
+                const myLocationControlContainer = document.createElement('div');
+                const myLocationControl = document.createElement('button');
+                myLocationControl.setAttribute('data-state', 'hideLocation');
+                myLocationControl.classList.add('mapCustomControl', 'separator');
+                myLocationControl.innerHTML = `<span data-icon="&#xe015;"></span>`;
+                myLocationControl.title = `Afișează/Ascunde locația mea`;
+                myLocationControl.type = 'button';
+
+                myLocationControl.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    // Check if geoLocation is available
+                    if (navigator.geolocation) {
+
+                        // Location hidden, show location
+                        if (myLocationControl.getAttribute('data-state') === 'hideLocation') {
+                            myLocationControl.setAttribute('data-state', 'showLocation');
+                            myLocationControl.classList.add('selected');
+
+                            // Show my location
+                            my.watcher = navigator.geolocation.watchPosition((position) => {
+
+                                // Get coordinates
+                                const lat = position.coords.latitude,
+                                    lng = position.coords.longitude;
+
+                                // Store coordinates
+                                map.myLocation.lat = lat;
+                                map.myLocation.lng = lng;
+
+                                if (my.app === null) {
+                                    my.app = new google.maps.Marker({
+                                        position: {lat: parseFloat(lat), lng: parseFloat(lng)},
+                                        map: app.map.ref,
+                                        title: 'Locația mea',
+                                        icon: {
+                                            url: `${cdn}pin/me.png`,
+                                            size: new google.maps.Size(28, 44),
+                                            origin: new google.maps.Point(0, 0),
+                                            anchor: new google.maps.Point(0, 22),
+                                            scaledSize: new google.maps.Size(28, 44)
+                                        }
+                                    });
+
+                                    my.app.setMap(map.ref);
+                                }
+
+                                // Update position
+                                my.app.setPosition(new google.maps.LatLng(lat, lng));
+                                my.lastUpdate = new Date().getTime();
+                                my.visible = true;
+
+                                map.ref.panTo(new google.maps.LatLng(
+                                    lat, lng
+                                ));
+
+                            }, () => {
+
+                                // Clear marker
+                                if (my.app !== null) {
+                                    my.app.setMap(null);
+                                    my.app = null;
+                                }
+
+                                // Clear watch
+                                if (my.watcher !== null) {
+                                    navigator.geolocation.clearWatch(my.watcher);
+                                    my.watcher = null;
+                                }
+
+                                // Clear data
+                                my.lastUpdate = null;
+                                my.visible = false;
+
+                                // Reset my location
+                                map.myLocation.lat = 0;
+                                map.myLocation.lng = 0;
+
+                                // Show warning...
+                                // ToDo
+                            }, {enableHighAccuracy: true, timeout: 5000});
+                        } else {
+                            myLocationControl.setAttribute('data-state', 'hideLocation');
+                            myLocationControl.classList.remove('selected');
+
+                            // Hide my location
+                            // Clear marker
+                            if (my.app !== null) {
+                                my.app.setMap(null);
+                                my.app = null;
+                            }
+
+                            // Clear watch
+                            if (my.watcher !== null) {
+                                navigator.geolocation.clearWatch(my.watcher);
+                                my.watcher = null;
+                            }
+
+                            // Clear data
+                            my.lastUpdate = null;
+                            my.visible = false;
+
+                            // Reset my location
+                            map.myLocation.lat = 0;
+                            map.myLocation.lng = 0;
+                        }
+
+                    } else {
+
+                        // Hide location and disable button
+                        myLocationControl.setAttribute('data-state', 'hideLocation');
+                        myLocationControl.classList.remove('selected');
+                        myLocationControl.setAttribute('disabled', 'disabled');
+                    }
+                });
+
+                // Append to container
+                myLocationControlContainer.appendChild(myLocationControl);
+
+                // Position custom button
+                map.ref.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(centerMapControlContainer);
+                map.ref.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(myLocationControlContainer);
+
                 // Populate map controls
                 map.controls = {
                     spinner: mapControls.querySelector('h3 .spinner'),
-
-                    // My location
-                    myLocation: mapControls.querySelector('input[type=checkbox][name="toggle.myLocation"]'),
-                    myLocationPrecise: mapControls.querySelector('.btn-precise-location'),
 
                     // Mobility
                     publicTransportation: mapControls.querySelector('input[type=checkbox][name="toggle.mobility.publicTransportation"]'),
@@ -274,22 +430,6 @@ const app = (() => {
 
                 // Show map controls panel
                 mapControls.classList.remove('hide');
-
-                // Show my precise location
-                if (map.controls.myLocationPrecise) {
-                    map.controls.myLocationPrecise.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        if (map.myLocation.lat > 0 && map.myLocation.lng > 0) {
-                            // map.ref.setZoom(16);
-                            map.ref.panTo(new google.maps.LatLng(
-                                map.myLocation.lat,
-                                map.myLocation.lng
-                            ));
-                        }
-                    });
-                }
 
                 // Populate map controls
                 const dataSetToggle = mapControls.querySelectorAll('.btn-toggle');
@@ -369,122 +509,6 @@ const app = (() => {
 
                                 map.controls.spinner.classList.add('hide');
                             });
-                        }
-
-                        // My Location
-                        else if (dataAttr.set === 'myLocation') {
-
-                            // Check if geoLocation is available
-                            if (navigator.geolocation) {
-
-                                // Enable
-                                toggle.addEventListener('click', () => {
-                                    map.controls.spinner.classList.remove('hide');
-
-                                    // Get input state
-                                    const toggleChecked = map.controls[dataAttr.set].checked;
-
-                                    if (toggleChecked) {
-
-                                        // Show precise location button
-                                        map.controls.myLocationPrecise.classList.remove('hide');
-
-                                        // Show my location
-                                        dataSets[dataAttr.set].watcher = navigator.geolocation.watchPosition((position) => {
-
-                                            // Get coordinates
-                                            const lat = position.coords.latitude,
-                                                lng = position.coords.longitude;
-
-                                            // Store coordinates
-                                            map.myLocation.lat = lat;
-                                            map.myLocation.lng = lng;
-
-                                            if (dataSets[dataAttr.set].app === null) {
-                                                dataSets[dataAttr.set].app = new google.maps.Marker({
-                                                    position: {lat: parseFloat(lat), lng: parseFloat(lng)},
-                                                    map: app.map.ref,
-                                                    title: 'Locația mea',
-                                                    icon: {
-                                                        url: `${cdn}pin/me.png`,
-                                                        size: new google.maps.Size(28, 44),
-                                                        origin: new google.maps.Point(0, 0),
-                                                        anchor: new google.maps.Point(0, 22),
-                                                        scaledSize: new google.maps.Size(28, 44)
-                                                    }
-                                                });
-
-                                                dataSets[dataAttr.set].app.setMap(map.ref);
-                                            }
-
-                                            // Update position
-                                            dataSets[dataAttr.set].app.setPosition(new google.maps.LatLng(lat, lng));
-                                            dataSets[dataAttr.set].lastUpdate = new Date().getTime();
-                                            dataSets[dataAttr.set].visible = true;
-
-                                        }, () => {
-
-                                            map.controls[dataAttr.set].checked = false;
-
-                                            // Clear marker
-                                            if (dataSets[dataAttr.set].app !== null) {
-                                                dataSets[dataAttr.set].app.setMap(null);
-                                                dataSets[dataAttr.set].app = null;
-                                            }
-
-                                            // Clear watch
-                                            if (dataSets[dataAttr.set].watcher !== null) {
-                                                navigator.geolocation.clearWatch(dataSets[dataAttr.set].watcher);
-                                                dataSets[dataAttr.set].watcher = null;
-                                            }
-
-                                            // Clear data
-                                            dataSets[dataAttr.set].lastUpdate = null;
-                                            dataSets[dataAttr.set].visible = false;
-
-                                            // Reset my location
-                                            map.myLocation.lat = 0;
-                                            map.myLocation.lng = 0;
-
-                                            // Hide precise location button
-                                            map.controls.myLocationPrecise.classList.add('hide');
-
-                                            // Show warning...
-                                            // ToDo
-                                        }, {enableHighAccuracy: true, timeout: 5000});
-                                    } else {
-
-                                        // Hide my location
-                                        // Clear marker
-                                        if (dataSets[dataAttr.set].app !== null) {
-                                            dataSets[dataAttr.set].app.setMap(null);
-                                            dataSets[dataAttr.set].app = null;
-                                        }
-
-                                        // Clear watch
-                                        if (dataSets[dataAttr.set].watcher !== null) {
-                                            navigator.geolocation.clearWatch(dataSets[dataAttr.set].watcher);
-                                            dataSets[dataAttr.set].watcher = null;
-                                        }
-
-                                        // Clear data
-                                        dataSets[dataAttr.set].lastUpdate = null;
-                                        dataSets[dataAttr.set].visible = false;
-
-                                        // Reset my location
-                                        map.myLocation.lat = 0;
-                                        map.myLocation.lng = 0;
-
-                                        // Hide precise location button
-                                        map.controls.myLocationPrecise.classList.add('hide');
-                                    }
-
-                                    map.controls.spinner.classList.add('hide');
-                                });
-                            } else {
-                                // Disable controller
-                                map.controls[dataAttr.set].setAttribute('disabled', 'disabled');
-                            }
                         }
                     }
                 });
@@ -632,10 +656,13 @@ const app = (() => {
         // Map
         map: map,
 
+        // My location
+        me: my,
+
         // DataSets
         dataSets: dataSets,
 
-        // Date difference between 2 dates
+        // Date difference
         dateDiff: dateDiff,
 
         // API call
