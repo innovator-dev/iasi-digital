@@ -1,0 +1,426 @@
+[
+  {
+    "agency_id": 1,
+    "route_id": 1,
+    "route_short_name": "13",
+    "route_long_name": "Copou - Pod Metalurgie - Copou",
+    "route_color": "#00adef",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 2,
+    "route_short_name": "43",
+    "route_long_name": "CUG I - Pacurari",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 4,
+    "route_short_name": "30",
+    "route_long_name": "Bucium - Canta",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 6,
+    "route_short_name": "42",
+    "route_long_name": "Copou - CUG I",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 8,
+    "route_short_name": "46",
+    "route_long_name": "Bucium - Pacurari",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 9,
+    "route_short_name": "30b",
+    "route_long_name": "Bucium - ERA",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 10,
+    "route_short_name": "28",
+    "route_long_name": "Dacia - Triumf",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 12,
+    "route_short_name": "41",
+    "route_long_name": "Piata Independentei - Ciurea",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 13,
+    "route_short_name": "8",
+    "route_long_name": "Copou - Tutora",
+    "route_color": "#121407",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 14,
+    "route_short_name": "7",
+    "route_long_name": "Canta - Tutora",
+    "route_color": "#2e3092",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 16,
+    "route_short_name": "20",
+    "route_long_name": "Tatarasi Sud - Metro",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 17,
+    "route_short_name": "43c",
+    "route_long_name": "CUG I - ERA",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 18,
+    "route_short_name": "11",
+    "route_long_name": "Dacia - Tatarasi Nord",
+    "route_color": "#f05b72",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 19,
+    "route_short_name": "6",
+    "route_long_name": "Dacia - Targu Cucu",
+    "route_color": "#c0caf9",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 23,
+    "route_short_name": "9",
+    "route_long_name": "Copou - Tehnopolis",
+    "route_color": "#4ea391",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 25,
+    "route_short_name": "27",
+    "route_long_name": "Tatarasi Nord - Ciurea",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 26,
+    "route_short_name": "29",
+    "route_long_name": "Podu Ros - Tomesti",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 27,
+    "route_short_name": "44",
+    "route_long_name": "Dacia - Ciurea",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 40,
+    "route_short_name": "49",
+    "route_long_name": "Targu Cucu - Complex Roua Residence",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 41,
+    "route_short_name": "1",
+    "route_long_name": "Copou - CFS II - Copou",
+    "route_color": "#f22c9f",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 42,
+    "route_short_name": "36",
+    "route_long_name": "Dacia - Breazu",
+    "route_color": "#a2238e",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 43,
+    "route_short_name": "50",
+    "route_long_name": "Gara - Aeroport",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 48,
+    "route_short_name": "19",
+    "route_long_name": "Canta - CUG I",
+    "route_color": "#b00a87",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 51,
+    "route_short_name": "44B",
+    "route_long_name": "Dacia - Tehnopolis",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 52,
+    "route_short_name": "27b",
+    "route_long_name": "Tatarasi Nord - Tehnopolis",
+    "route_color": "#203d4d",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 54,
+    "route_short_name": "52",
+    "route_long_name": "Copou - Piata A.C.B.",
+    "route_color": "#000000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 57,
+    "route_short_name": "18",
+    "route_long_name": "Tatarasi Sud -  Aviatiei",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 63,
+    "route_short_name": "23",
+    "route_long_name": "Podu Ros - Centru Miroslava",
+    "route_color": "#ac07b5",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 64,
+    "route_short_name": "48 ",
+    "route_long_name": "Targu Cucu - Complex Roua",
+    "route_color": "#b50d8b",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 68,
+    "route_short_name": "47",
+    "route_long_name": "Dacia - Tatarasi Sud",
+    "route_color": "#c90eaa",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 69,
+    "route_short_name": "54",
+    "route_long_name": "Targu Cucu - Albinet",
+    "route_color": "#b70dbd",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 79,
+    "route_short_name": "3 e",
+    "route_long_name": "3 e",
+    "route_color": "#000",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 81,
+    "route_short_name": "3",
+    "route_long_name": "Gara - Dancu",
+    "route_color": "#1fa633",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 85,
+    "route_short_name": "5",
+    "route_long_name": "Dacia - Tutora",
+    "route_color": "#000",
+    "route_type": 0
+  },
+  {
+    "agency_id": 1,
+    "route_id": 87,
+    "route_short_name": "101",
+    "route_long_name": "101",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 88,
+    "route_short_name": "102",
+    "route_long_name": "102",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 89,
+    "route_short_name": "104",
+    "route_long_name": "104",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 90,
+    "route_short_name": "803",
+    "route_long_name": "803",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 91,
+    "route_short_name": "801",
+    "route_long_name": "R.Tutora-Goruni",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 92,
+    "route_short_name": "702",
+    "route_long_name": "Pacurari-Copou",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 93,
+    "route_short_name": "701",
+    "route_long_name": "Copou-Horlesti",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 94,
+    "route_short_name": "601",
+    "route_long_name": "Tg.Cucu-Popricani",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 95,
+    "route_short_name": "503",
+    "route_long_name": "C.U.G. I-Proselnici",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 96,
+    "route_short_name": "501",
+    "route_long_name": "Podu Ros-Vorovesti",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 97,
+    "route_short_name": "401",
+    "route_long_name": "401",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 98,
+    "route_short_name": "202",
+    "route_long_name": "Podu Ros-Paun",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 99,
+    "route_short_name": "103",
+    "route_long_name": "Targu Cucu - Sorogari",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 100,
+    "route_short_name": "203",
+    "route_long_name": "Podu Ros – Visan",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 101,
+    "route_short_name": "301",
+    "route_long_name": "CUG I - Dumbrava",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 102,
+    "route_short_name": "502",
+    "route_long_name": "C.U.G. I - Ciurbesti",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 103,
+    "route_short_name": "802",
+    "route_long_name": "Rond Tutora - Chicerea",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 109,
+    "route_short_name": "802b",
+    "route_long_name": "802b",
+    "route_color": "#b087b0",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 110,
+    "route_short_name": "802b",
+    "route_long_name": "802b",
+    "route_color": "#000",
+    "route_type": 3
+  }
+]
