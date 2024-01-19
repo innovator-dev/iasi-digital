@@ -274,3 +274,38 @@
     margin-left: auto;
   }
 }
+
+// Custom map control
+.mapCustomControl {
+  position: relative;
+
+  background-color: var(--google-map-control-background-color);
+  color: var(--google-map-control-text-color);
+
+  width: 40px;
+  height: 40px;
+
+  cursor: pointer;
+  appearance: none;
+  padding: 0;
+  margin: 0;
+  border: 0;
+
+  box-shadow: rgba(0, 0, 0, 0.3) 0 1px 4px -1px;
+  border-radius: 2px;
+
+  right: 10px;
+  font-size: 1.8em;
+
+  &:hover {
+    color: var(--google-map-control-text-color-hover);
+  }
+
+  &.selected {
+    color: var(--google-map-control-text-color-selected);
+  }
+
+  &.separator {
+    bottom: 10px;
+  }
+}
