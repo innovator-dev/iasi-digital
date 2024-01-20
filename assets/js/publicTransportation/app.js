@@ -3,8 +3,8 @@
  * A data-driven perspective of the city.
  *
  * @author Innovator Dev <hello@innovator.dev>
- * @link https://oras.digital
  * @link https://iasi.digital
+ * @link https://oras.digital
  *
  * @copyright (c) Iasi Digital [https://iasi.digital]
  */
@@ -56,16 +56,16 @@ const publicTransportation = (() => {
 
     /**
      * Perform fetch request to API, routes endpoint.
-     * @param callback Fetch callback method
      * @returns {boolean}
      */
-    function populateRoutes(callback = null) {
+    function populateRoutes() {
 
-        app.api(`${url}`, 'POST', {
-            action: 'fetch',
-            type: 'api',
-            value: '74eb-a3f3-436b-aa5f-0c2a/816b8cdb6dc7997cbbe0cb9e1b2969727406'
-        }).then((response) => {
+        // Shapes URL
+        const routes = `${app.cdn}js/publicTransportation/routes.json`;
+        // const routes = `https://iasidigital.idealweb.ro/assets/js/publicTransportation/routes.json`;
+
+        // Populate shapes
+        app.api(`${routes}`).then((response) => {
             if (!response.ok) {
                 return false;
             }
@@ -78,7 +78,79 @@ const publicTransportation = (() => {
                 app.dataSets.publicTransportation.data.routes[route.route_id] = {
                     name: route.route_short_name,
                     long: route.route_long_name,
-                    type: route.route_type
+                    type: route.route_type,
+                    color: route.route_color
+                };
+            });
+
+        }).catch(err => {
+            return false;
+        });
+
+        return true;
+    }
+
+    /**
+     * Perform fetch request to SHAPES in order to highlight transportation route on the map.
+     * @returns {boolean}
+     */
+    function populateShapes() {
+
+        // Shapes URL
+        const shapes = `${app.cdn}js/publicTransportation/shapes.json`;
+        // const shapes = `https://iasidigital.idealweb.ro/assets/js/publicTransportation/shapes.json`;
+
+        // Populate shapes
+        app.api(`${shapes}`).then((response) => {
+            if (!response.ok) {
+                return false;
+            }
+
+            return response.json();
+        }).then((json) => {
+            app.dataSets.publicTransportation.data.shapes = {};
+
+            json.forEach((shape) => {
+                app.dataSets.publicTransportation.data.shapes[shape.shape_id] = {
+                    lat: shape.shape_pt_lat,
+                    long: shape.shape_pt_lon,
+                    seq: shape.shape_pt_sequence
+                };
+            });
+
+        }).catch(err => {
+            return false;
+        });
+
+        return true;
+    }
+
+    /**
+     * Perform fetch request to API, trips endpoint.
+     * @param callback Fetch callback method
+     * @returns {boolean}
+     */
+    function populateTrips(callback = null) {
+
+        app.api(`${url}`, 'POST', {
+            action: 'fetch',
+            type: 'api',
+            value: 'dc2a-cd0a-477f-95f3-1107/52cf25d5c64d1f700b8867cee05112525698'
+        }).then((response) => {
+            if (!response.ok) {
+                return false;
+            }
+
+            return response.json();
+        }).then((json) => {
+            app.dataSets.publicTransportation.data.trips = {};
+
+            json.forEach((trip) => {
+                app.dataSets.publicTransportation.data.trips[trip.route_id] = {
+                    trip: trip.trip_id,
+                    headSign: trip.trip_headsign,
+                    direction: trip.direction_id,
+                    shape: trip.shape_id
                 };
             });
 
@@ -121,8 +193,14 @@ const publicTransportation = (() => {
      */
     function init() {
 
-        // Fetch routes
+        // Populate routes
         populateRoutes();
+
+        // Populate shapes
+        // populateShapes();
+
+        // Fetch trips
+        populateTrips();
 
         setWatcher(60000, () => {
             fetch();
@@ -178,14 +256,14 @@ const publicTransportation = (() => {
      */
     function render() {
 
-        // Populate routes
-        if (app.dataSets.publicTransportation.data.routes === undefined) {
-            populateRoutes();
+        // Populate trips
+        if (app.dataSets.publicTransportation.data.trips === undefined) {
+            populateTrips();
 
-            // Update routes every 60 seconds
+            // Update trips every 2 minutes
             setInterval(() => {
-                populateRoutes();
-            }, 60000);
+                populateTrips();
+            }, 120000);
         }
 
         // Render vehicles
@@ -201,12 +279,14 @@ const publicTransportation = (() => {
                 let timeSinceLastUpdate = app.dateDiff(entry.timestamp, true);
 
                 // Validate entry
-                if (entry.latitude && entry.longitude && entry.route_id !== undefined && app.dataSets.publicTransportation.data.routes[entry.route_id] !== undefined && timeSinceLastUpdate < 60) {
+                if (entry.latitude && entry.longitude && entry.route_id !== undefined && app.dataSets.publicTransportation.data.routes[entry.route_id] !== undefined && app.dataSets.publicTransportation.data.trips[entry.route_id] !== undefined && timeSinceLastUpdate < 60) {
 
                     // Get matching route for current vehicle
-                    let vehicleRoute = app.dataSets.publicTransportation.data.routes[entry.route_id].name,
-                        vehicleRouteLong = app.dataSets.publicTransportation.data.routes[entry.route_id].long,
-                        vehicleType = app.dataSets.publicTransportation.data.routes[entry.route_id].type;
+                    let vehicleRoute = app.dataSets.publicTransportation.data.routes[entry.route_id].name.trim(),
+                        vehicleRouteLong = app.dataSets.publicTransportation.data.routes[entry.route_id].long.trim(),
+                        vehicleType = app.dataSets.publicTransportation.data.routes[entry.route_id].type,
+                        vehicleTripHeadSign = app.dataSets.publicTransportation.data.trips[entry.route_id].headSign.trim(),
+                        vehicleTripDirection = app.dataSets.publicTransportation.data.trips[entry.route_id].direction;
 
                     if (app.dataSets.publicTransportation.markers[entry.label]) {
 
@@ -216,7 +296,7 @@ const publicTransportation = (() => {
                         app.dataSets.publicTransportation.markers[entry.label]['lastUpdate'] = entry.timestamp;
 
                         app.dataSets.publicTransportation.markers[entry.label]['popup'] =
-                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
+                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Direcție</strong>: ${vehicleTripHeadSign}</li><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
                     } else {
 
                         app.dataSets.publicTransportation.markers[entry.label] = {
@@ -238,7 +318,7 @@ const publicTransportation = (() => {
                             }),
                             lastUpdate: entry.timestamp,
                             visible: true,
-                            popup: `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
+                            popup: `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Direcție</strong>: ${vehicleTripHeadSign}</li><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
                         };
 
                         app.dataSets.publicTransportation.markers[entry.label].ref.addListener('click', () => {
