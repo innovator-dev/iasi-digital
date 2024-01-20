@@ -3,8 +3,8 @@
  * A data-driven perspective of the city.
  *
  * @author Innovator Dev <hello@innovator.dev>
- * @link https://oras.digital
  * @link https://iasi.digital
+ * @link https://oras.digital
  *
  * @copyright (c) Iasi Digital [https://iasi.digital]
  */
@@ -102,9 +102,11 @@ const publicParking = (() => {
      */
     function init() {
 
-        setWatcher(60000, () => {
-            fetch();
-        });
+        // Refresh data every 2 minutes
+        // Disable refresh watcher at init
+        // setWatcher(120000, () => {
+        //    fetch();
+        // });
     }
 
     /**
@@ -117,7 +119,7 @@ const publicParking = (() => {
 
         // Setup watcher
         // Run marker rendering
-        setWatcher(20000, () => {
+        setWatcher(60000, () => {
             fetch(() => {
                 render();
             });
@@ -132,8 +134,8 @@ const publicParking = (() => {
      */
     function hide() {
 
-        // Return watcher to default value
-        setWatcher(60000, () => {
+        // Return watcher to default value (2 minutes)
+        setWatcher(120000, () => {
             fetch();
         });
 
@@ -149,6 +151,9 @@ const publicParking = (() => {
 
         // Mark dataSet hidden
         app.dataSets.publicParking.visible = false;
+
+        // Reset any direction service query
+        app.events.fire('clearDirectionService');
     }
 
     /**
@@ -167,50 +172,102 @@ const publicParking = (() => {
             // Render parking places
             app.dataSets.publicParking.data.places.forEach((entry) => {
 
-                app.dataSets.publicParking.markers[entry.sensorId] = {
-                    id: entry.sensorId,
-                    parking: entry.parkingId,
-                    state: entry.stare,
-                    ref: new google.maps.Marker({
-                        position: {lat: parseFloat(entry.latitude), lng: parseFloat(entry.longitude)},
-                        map: app.map.ref,
-                        title: entry.numar.toString(),
-                        optimized: true,
-                        icon: {
-                            url: `${app.cdn}pin/public-parking/${entry.stare}.png`,
-                            size: new google.maps.Size(28, 44),
-                            origin: new google.maps.Point(0, 0),
-                            anchor: new google.maps.Point(0, 22),
-                            scaledSize: new google.maps.Size(28, 44)
+                if (app.dataSets.publicParking.markers[entry.sensorId] === undefined) {
+                    app.dataSets.publicParking.markers[entry.sensorId] = {
+                        id: entry.sensorId,
+                        parking: entry.parkingId,
+                        state: entry.stare,
+                        ref: new google.maps.Marker({
+                            position: {lat: parseFloat(entry.latitude), lng: parseFloat(entry.longitude)},
+                            map: app.map.ref,
+                            title: entry.numar.toString(),
+                            optimized: true,
+                            icon: {
+                                url: `${app.cdn}pin/public-parking/${entry.stare}.png`,
+                                size: new google.maps.Size(28, 44),
+                                origin: new google.maps.Point(0, 0),
+                                anchor: new google.maps.Point(0, 22),
+                                scaledSize: new google.maps.Size(28, 44)
+                            }
+                        }),
+                        lastUpdate: Date.now(),
+                        visible: true,
+                        popup: `<div id="mapPopup"><header><span class="label parking parking-${entry.stare} ic-mr-10">P</span><h5>${parseInt(entry.stare) === 1 ? 'Liber' : parseInt(entry.stare) === 2 ? 'Ocupat' : 'Rezervat'}</h5></header><main><ul><li><strong>Număr loc parcare</strong>: ${entry.numar}</li><li><strong>Parcare</strong>: ${parkingMapping[entry.parkingId]}</li></ul><nav><button class="btn btn-render-direction" data-lat="${parseFloat(entry.latitude)}" data-lng="${parseFloat(entry.longitude)}">Afișează rută <span data-icon="&#xe018;" class="ic-ml-5"></span></button></nav></main></div>`
+                    };
+
+                    app.dataSets.publicParking.markers[entry.sensorId].ref.addListener('click', () => {
+
+                        // MapPopup visible? Close it.
+                        if (app.map.popup) {
+                            app.map.popup.close();
+                            app.dataSets.publicParking.selectedMarker = null;
+
+                            // Reset any direction service query
+                            app.events.fire('clearDirectionService');
                         }
-                    }),
-                    lastUpdate: Date.now(),
-                    visible: true,
-                    popup: `<div id="mapPopup"><header><span class="label parking parking-${entry.stare} ic-mr-10">P</span><h5>${parseInt(entry.stare) === 1 ? 'Liber' : parseInt(entry.stare) === 2 ? 'Ocupat' : 'Rezervat'}</h5></header><main><ul><li><strong>Număr loc parcare</strong>: ${entry.numar}</li><li><strong>Parcare</strong>: ${parkingMapping[entry.parkingId]}</li></ul></main></div>`
-                };
 
-                app.dataSets.publicParking.markers[entry.sensorId].ref.addListener('click', () => {
+                        // Save selected marker
+                        app.dataSets.publicParking.selectedMarker = app.dataSets.publicParking.markers[entry.sensorId].ref;
 
-                    // MapPopup visible? Close it.
-                    if (app.map.popup) {
-                        app.map.popup.close();
-                        app.dataSets.publicParking.selectedMarker = null;
-                    }
+                        // Create InfoWindow
+                        app.map.popup = new google.maps.InfoWindow({
+                            content: app.dataSets.publicParking.markers[entry.sensorId]['popup']
+                        });
 
-                    // Save selected marker
-                    app.dataSets.publicParking.selectedMarker = app.dataSets.publicParking.markers[entry.sensorId].ref;
+                        // Open popup
+                        app.map.popup.open(
+                            app.map.ref,
+                            app.dataSets.publicParking.selectedMarker
+                        );
 
-                    // Create InfoWindow
-                    app.map.popup = new google.maps.InfoWindow({
-                        content: app.dataSets.publicParking.markers[entry.sensorId]['popup']
+                        google.maps.event.addListener(app.map.popup, 'domready', () => {
+                            const showRouteButton = document.querySelector('.btn-render-direction');
+                            showRouteButton.addEventListener('click', (e) => {
+
+                                // Get parking place location
+                                let parkingPlaceLat = parseFloat(showRouteButton.getAttribute('data-lat')) || 0,
+                                    parkingPlaceLng = parseFloat(showRouteButton.getAttribute('data-lng')) || 0;
+
+                                // Validate if myLocation has data
+                                try {
+
+                                    if (app.map.direction.service === null) {
+                                        app.events.fire('initiateDirectionService');
+                                    }
+
+                                    // Validate user location
+                                    if (app.me.location.lat === 0 || app.me.location.lng === 0) {
+                                        throw `Nu a putut fi determinată poziția. Pentru a putea afișa traseul, este necesară activarea locației.`;
+                                    }
+
+                                    if (parkingPlaceLat === 0 || parkingPlaceLng === 0) {
+                                        throw `Nu a putut fi determinată poziția locului de parcare.`;
+                                    }
+
+                                    app.map.direction.service.route({
+                                        origin: new google.maps.LatLng(app.me.location.lat, app.me.location.lng),
+                                        destination: new google.maps.LatLng(parkingPlaceLat, parkingPlaceLng),
+                                        travelMode: 'DRIVING'
+                                    }, function (res, status) {
+                                        if (status === 'OK') {
+                                            console.log(res);
+                                            app.map.direction.renderer.setDirections(res);
+                                        }
+                                    });
+                                } catch (err) {
+                                    app.notify(err, 'error', 10);
+                                }
+                            });
+                        });
                     });
 
-                    // Open popup
-                    app.map.popup.open(
-                        app.map.ref,
-                        app.dataSets.publicParking.selectedMarker
-                    );
-                });
+                } else {
+
+                    // Update data
+                    app.dataSets.publicParking.markers[entry.sensorId]['state'] = entry.stare;
+                    app.dataSets.publicParking.markers[entry.sensorId]['lastUpdate'] = Date.now();
+                    app.dataSets.publicParking.markers[entry.sensorId]['popup'] = `<div id="mapPopup"><header><span class="label parking parking-${entry.stare} ic-mr-10">P</span><h5>${parseInt(entry.stare) === 1 ? 'Liber' : parseInt(entry.stare) === 2 ? 'Ocupat' : 'Rezervat'}</h5></header><main><ul><li><strong>Număr loc parcare</strong>: ${entry.numar}</li><li><strong>Parcare</strong>: ${parkingMapping[entry.parkingId]}</li></ul><nav><button class="btn  btn-render-direction" data-lat="${parseFloat(entry.latitude)}" data-lng="${parseFloat(entry.longitude)}">Afișează rută <span data-icon="&#xe018;" class="ic-ml-5"></span></button></nav></main></div>`
+                }
             });
         }
     }
