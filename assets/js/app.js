@@ -72,7 +72,7 @@ class Observer {
 
 /**
  * Iași Digital app.
- * @type {{dateDiff: ((function(*, boolean=): (number|null))|*), route: (function(): {}), me: {app: null, watcher: null, visible: boolean, updated: null}, dataSets: {}, api: (function(string, string=, string=, Object=): Promise<Response>), cdn: string, map: {loaded: boolean, ref: null, popup: null, controls: {}, mapCenter: {lng: number, lat: number}}, render: render, events: Observer}}
+ * @type {{dateDiff: ((function(*, boolean=): (number|null))|*), route: (function(): {}), me: {app: null, watcher: null, visible: boolean, updated: null}, dataSets: {}, api: (function(string, string=, string=, Object=): Promise<Response>), cdn: string, map: {loaded: boolean, ref: null, popup: null, controls: {}, mapCenter: {lng: number, lat: number}}, render: render, events: Observer, notify: notification}}
  */
 const app = (() => {
 
@@ -96,12 +96,18 @@ const app = (() => {
         // Map configuration
         ref: null,
         mapCenter: {lat: 47.1553424, lng: 27.585645},
-        myLocation: {lat: 0, lng: 0},
         loaded: false,
         popup: null,
 
         // Map controls
-        controls: {}
+        controls: {},
+
+        // Direction service
+        direction: {
+            loaded: false,
+            service: null,
+            renderer: null
+        }
     };
 
     /**
@@ -112,7 +118,11 @@ const app = (() => {
         app: null,
         watcher: null,
         visible: false,
-        updated: null
+        updated: null,
+        location: {
+            lat: 0,
+            lng: 0
+        }
     };
 
     /**
@@ -253,9 +263,92 @@ const app = (() => {
     }
 
     /**
+     * Trigger notification rendering.
+     *
+     * @param message Notification message
+     * @param type (Optional) Notification type (error, info, success, warning)
+     * @param autoHide (Optional) Auto hide notification after given seconds
+     * @param floating (Optional) Render notification positioned bottom left of the window
+     */
+    function notification(message, type = 'error', autoHide = 0, floating = true) {
+
+        // Validate container
+        const container = document.querySelector('.notification-floating-placeholder');
+        if (container) {
+
+            // Check if there are other notifications visible
+            const activeNotifiers = container.querySelectorAll('.notification');
+
+            // Prepare notification
+            const notification = document.createElement('p');
+            notification.classList.add('notification', 'notification-sm');
+
+            // Clear existing class types
+            notification.classList.remove('error', 'success', 'info', 'warning');
+
+            // Add type
+            notification.classList.add(type);
+
+            // Add message
+            notification.innerHTML = message;
+
+            // Floating
+            if (floating) {
+                notification.classList.add('notification-floating', 'notification-animation');
+
+                // If existing notification, move upper
+                if (activeNotifiers.length > 0) {
+                    notification.style.bottom = `${(activeNotifiers.length * 45) + 20}px`;
+                }
+            } else {
+
+                // If existing notification, close it
+                if (activeNotifiers.length > 0) {
+                    container.innerHTML = '';
+                }
+            }
+
+            // Append child
+            container.appendChild(notification);
+
+            // Auto hide message
+            if (autoHide > 0) {
+
+                // Hide notification after seconds
+                setTimeout(() => {
+                    notification.classList.remove('notification', 'notification-sm', 'notification-inline', 'notification-animation', 'notification-floating', 'error', 'success', 'info', 'warning');
+                    notification.innerHTML = '';
+
+                    // Remove child
+                    notification.parentNode.removeChild(notification);
+                }, (autoHide * 1000));
+            }
+        }
+    }
+
+    /**
      * Render page components.
      */
     function render() {
+
+        // Initiate direction service
+        events.add('initiateDirectionService', () => {
+            if (map.loaded) {
+
+                // Initiate map direction service
+                if (map.direction.service === null) {
+                    map.direction.service = new google.maps.DirectionsService();
+                }
+
+                // Initiate map direction renderer
+                if (map.direction.renderer === null) {
+                    map.direction.renderer = new google.maps.DirectionsRenderer();
+                    map.direction.renderer.setMap(map.ref);
+                }
+
+                map.direction.loaded = true;
+            }
+        });
 
         // Render map controls
         events.add('mapRenderControls', () => {
@@ -309,6 +402,9 @@ const app = (() => {
                             myLocationControl.setAttribute('data-state', 'showLocation');
                             myLocationControl.classList.add('selected');
 
+                            // Initiate direction service
+                            events.fire('initiateDirectionService');
+
                             // Show my location
                             my.watcher = navigator.geolocation.watchPosition((position) => {
 
@@ -317,8 +413,8 @@ const app = (() => {
                                     lng = position.coords.longitude;
 
                                 // Store coordinates
-                                map.myLocation.lat = lat;
-                                map.myLocation.lng = lng;
+                                my.location.lat = lat;
+                                my.location.lng = lng;
 
                                 if (my.app === null) {
                                     my.app = new google.maps.Marker({
@@ -365,8 +461,8 @@ const app = (() => {
                                 my.visible = false;
 
                                 // Reset my location
-                                map.myLocation.lat = 0;
-                                map.myLocation.lng = 0;
+                                my.location.lat = 0;
+                                my.location.lng = 0;
 
                                 // Show warning...
                                 // ToDo
@@ -393,8 +489,8 @@ const app = (() => {
                             my.visible = false;
 
                             // Reset my location
-                            map.myLocation.lat = 0;
-                            map.myLocation.lng = 0;
+                            my.location.lat = 0;
+                            my.location.lng = 0;
                         }
 
                     } else {
@@ -669,6 +765,9 @@ const app = (() => {
 
         // Route path
         route: getRoutePath,
+
+        // Notification
+        notify: notification,
 
         // Render page
         render: render
