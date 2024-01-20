@@ -350,6 +350,23 @@ const app = (() => {
             }
         });
 
+        // Clear direction service
+        events.add('clearDirectionService', () => {
+
+            // Direction service is initiated
+            if (map.direction.service !== null) {
+                map.direction.service = null;
+            }
+
+            // Direction renderer is initiated
+            if (map.direction.renderer !== null) {
+                map.direction.renderer.setMap(null);
+                map.direction.renderer = null;
+            }
+
+            map.direction.loaded = false;
+        });
+
         // Render map controls
         events.add('mapRenderControls', () => {
 
@@ -375,6 +392,9 @@ const app = (() => {
                             map.mapCenter.lat,
                             map.mapCenter.lng
                         ));
+
+                        // Zoom
+                        map.ref.setZoom(14);
                     }
                 });
 
@@ -438,35 +458,47 @@ const app = (() => {
                                 my.lastUpdate = new Date().getTime();
                                 my.visible = true;
 
-                                map.ref.panTo(new google.maps.LatLng(
-                                    lat, lng
-                                ));
+                                map.ref.panTo(new google.maps.LatLng(lat, lng));
 
                             }, () => {
 
-                                // Clear marker
-                                if (my.app !== null) {
-                                    my.app.setMap(null);
-                                    my.app = null;
+                                try {
+                                    // Clear marker
+                                    if (my.app !== null) {
+                                        my.app.setMap(null);
+                                        my.app = null;
+                                    }
+
+                                    // Clear watch
+                                    if (my.watcher !== null) {
+                                        navigator.geolocation.clearWatch(my.watcher);
+                                        my.watcher = null;
+                                    }
+
+                                    // Clear data
+                                    my.lastUpdate = null;
+                                    my.visible = false;
+
+                                    // Reset my location
+                                    my.location.lat = 0;
+                                    my.location.lng = 0;
+
+                                    // Reset any direction service query
+                                    app.events.fire('clearDirectionService');
+
+                                    // Show warning...
+                                    throw 'Nu a putut fi determinată poziția. Verificați dacă browser-ul are permisiunea de a prelua locația.';
+
+                                } catch (err) {
+                                    notification(err, 'error', 10);
+
+                                    myLocationControl.setAttribute('data-state', 'hideLocation');
+                                    myLocationControl.classList.remove('selected');
+                                    myLocationControl.setAttribute('disabled', 'disabled');
                                 }
 
-                                // Clear watch
-                                if (my.watcher !== null) {
-                                    navigator.geolocation.clearWatch(my.watcher);
-                                    my.watcher = null;
-                                }
-
-                                // Clear data
-                                my.lastUpdate = null;
-                                my.visible = false;
-
-                                // Reset my location
-                                my.location.lat = 0;
-                                my.location.lng = 0;
-
-                                // Show warning...
-                                // ToDo
                             }, {enableHighAccuracy: true, timeout: 5000});
+
                         } else {
                             myLocationControl.setAttribute('data-state', 'hideLocation');
                             myLocationControl.classList.remove('selected');
@@ -491,6 +523,9 @@ const app = (() => {
                             // Reset my location
                             my.location.lat = 0;
                             my.location.lng = 0;
+
+                            // Reset any direction service query
+                            app.events.fire('clearDirectionService');
                         }
 
                     } else {
