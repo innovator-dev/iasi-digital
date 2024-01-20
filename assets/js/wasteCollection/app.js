@@ -3,8 +3,8 @@
  * A data-driven perspective of the city.
  *
  * @author Innovator Dev <hello@innovator.dev>
- * @link https://oras.digital
  * @link https://iasi.digital
+ * @link https://oras.digital
  *
  * @copyright (c) Iasi Digital [https://iasi.digital]
  */
@@ -82,7 +82,7 @@ const wasteCollection = (() => {
      */
     function init() {
 
-        setWatcher(120000, () => {
+        setWatcher(60000, () => {
             fetch();
         });
     }
@@ -97,7 +97,7 @@ const wasteCollection = (() => {
 
         // Setup watcher
         // Run marker rendering
-        setWatcher(20000, () => {
+        setWatcher(30000, () => {
             fetch(() => {
                 render();
             });
