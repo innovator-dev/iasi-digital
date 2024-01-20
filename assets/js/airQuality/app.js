@@ -3,8 +3,8 @@
  * A data-driven perspective of the city.
  *
  * @author Innovator Dev <hello@innovator.dev>
- * @link https://oras.digital
  * @link https://iasi.digital
+ * @link https://oras.digital
  *
  * @copyright (c) Iasi Digital [https://iasi.digital]
  */
@@ -136,7 +136,7 @@ const airQuality = (() => {
 
         // Setup watcher
         // Run marker rendering
-        setWatcher(20000, () => {
+        setWatcher(60000, () => {
             fetch(() => {
                 render();
             });
@@ -152,7 +152,7 @@ const airQuality = (() => {
     function hide() {
 
         // Return watcher to default value
-        setWatcher(60000, () => {
+        setWatcher(120000, () => {
             fetch();
         });
 
