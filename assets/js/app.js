@@ -3,8 +3,8 @@
  * A data-driven perspective of the city.
  *
  * @author Innovator Dev <hello@innovator.dev>
- * @link https://oras.digital
  * @link https://iasi.digital
+ * @link https://oras.digital
  *
  * @copyright (c) Iasi Digital [https://iasi.digital]
  */
@@ -72,7 +72,7 @@ class Observer {
 
 /**
  * Iași Digital app.
- * @type {{dateDiff: ((function(*): (number|null))|*), route: (function(): {}), dataSets: {}, api: (function(string, string=, string=, Object=): Promise<Response>), cdn: string, map: {loaded: boolean, ref: null, popup: null, controls: {}, mapCenter: {lng: number, lat: number}}, render: render, events: Observer}}
+ * @type {{dateDiff: ((function(*, boolean=): (number|null))|*), route: (function(): {}), me: {app: null, watcher: null, visible: boolean, updated: null}, dataSets: {}, api: (function(string, string=, string=, Object=): Promise<Response>), cdn: string, map: {loaded: boolean, ref: null, popup: null, controls: {}, mapCenter: {lng: number, lat: number}}, render: render, events: Observer}}
  */
 const app = (() => {
 
@@ -424,8 +424,7 @@ const app = (() => {
 
                     // Environment
                     airQuality: mapControls.querySelector('input[type=checkbox][name="toggle.environment.airQuality"]'),
-                    wasteCollection: mapControls.querySelector('input[type=checkbox][name="toggle.environment.wasteCollection"]'),
-                    wasteCollectionPoints: mapControls.querySelector('input[type=checkbox][name="toggle.environment.wasteCollectionPoints"]')
+                    wasteCollection: mapControls.querySelector('input[type=checkbox][name="toggle.environment.wasteCollection"]')
                 };
 
                 // Show map controls panel
@@ -527,8 +526,8 @@ const app = (() => {
                     // Decode URL
                     const mapUrl = JSON.parse(atob(mapAttr.bind));
 
+                    // Load map
                     load(mapUrl.url, () => {
-
                         map.ref = new google.maps.Map(mapDiv, {
                             center: map.mapCenter,
                             zoom: 14,
