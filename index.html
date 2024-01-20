@@ -1,65 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" name="viewport"/>
-  <link href="https://opendata.oras.digital" rel="preconnect"/>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/><link as="style" href="https://iasi.digital/assets/css/app.css" rel="preload"/><link as="style" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap" rel="preload"/>
-  <link href="https://iasi.digital/favicon.ico" rel="icon" sizes="48x48"/><link href="https://iasi.digital/app.icon/196.png" rel="shortcut icon" sizes="196x196"/><link href="https://iasi.digital/app.icon/196.png" rel="apple-touch-icon"/>
+  <link href="https://opendata.oras.digital" rel="preconnect" crossorigin/><link href="https://fonts.googleapis.com" rel="preconnect" crossorigin/><link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/><link as="style" href="https://iasi.digital/assets/css/app.css" rel="preload"/><link as="style" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap" rel="preload"/>
+  <link href="https://iasi.digital/favicon.ico" rel="icon" sizes="48x48"/><link href="https://iasi.digital/assets/app.icon/196.png" rel="shortcut icon" sizes="196x196"/><link href="https://iasi.digital/assets/app.icon/196.png" rel="apple-touch-icon"/>
   <link href="https://iasi.digital/" rel="canonical"/>
   <title>Iași Digital</title>
-  <meta content="Explorează Iașul digital, dintr-o perspectivă bazată pe date deschise (open data), accesează date și informații relevante privind calitatea vieții, transportul public și sistemul de parcări." name="description"/>
+  <meta content="Explorează Iași digital, dintr-o perspectivă bazată pe date deschise (open data), accesând date și informații relevante privind calitatea vieții, transportul public și sistemul de parcări." name="description"/>
   <meta content="index,follow" name="robots"/>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://iasi.digital/assets/css/app.css"/>
 </head>
 <body class="page home-page">
 <header><div class="container"><a href="https://iasi.digital" class="logo na" title="Iași Digital"><h1><strong>Iași</strong> Digital</h1></a></div></header>
-<main>
-    <div id="map" data-bind="eyJ1cmwiOiJodHRwczovL21hcHMuZ29vZ2xlYXBpcy5jb20vbWFwcy9hcGkvanM/a2V5PUFJemFTeUNST01Bd0MxdklqYzdFOWw4LWtKOTZ2SGQtdWpPU0dsUSJ9"><div class="spinner"></div></div>
-    <div class="mapControls hide">
-        <h3>Opțiuni <span class="spinner hide"></span></h3>
-        <form name="map-controls">
-            <ul>
-                <li>
-                    <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
-                        <input class="btn-toggle ic-mr-10" id="toggle.mobility.publicTransportation" name="toggle.mobility.publicTransportation" type="checkbox" data-set="publicTransportation" data-source="https://iasi.digital/assets/js/publicTransportation/app.min.js"/>
-                        <label class="form-label form-label-inline" for="toggle.mobility.publicTransportation" title="Afișează date transport public Iași"> Date transport public</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
-                        <input class="btn-toggle ic-mr-10" id="toggle.mobility.publicParking" name="toggle.mobility.publicParking" type="checkbox" data-set="publicParking" data-source="https://iasi.digital/assets/js/publicParking/app.min.js"/>
-                        <label class="form-label form-label-inline" for="toggle.mobility.publicParking" title="Afișează date parcări"> Date parcări</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
-                        <input class="btn-toggle ic-mr-10" id="toggle.environment.airQuality" name="toggle.environment.airQuality" type="checkbox" data-set="airQuality" data-source="https://iasi.digital/assets/js/airQuality/app.min.js"/>
-                        <label class="form-label form-label-inline" for="toggle.environment.airQuality" title="Afișează date calitate aer Iași"> Date calitate aer</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
-                        <input class="btn-toggle ic-mr-10" id="toggle.environment.wasteCollection" name="toggle.environment.wasteCollection" type="checkbox" data-set="wasteCollection" data-source="https://iasi.digital/assets/js/wasteCollection/app.min.js"/>
-                        <label class="form-label form-label-inline" for="toggle.environment.wasteCollection" title="Afișează date colectare deșeuri Iași"> Date colectare deșeuri</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
-                        <input class="btn-toggle ic-mr-10" id="toggle.mobility.trafficLayer" name="toggle.mobility.trafficLayer" type="checkbox" data-set="trafficLayer"/>
-                        <label class="form-label form-label-inline" for="toggle.mobility.trafficLayer" title="Afișează date trafic"> Date trafic</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-group form-group-inline form-group-centered fgi-separator fgi-start fqi-as-row">
-                        <input class="btn-toggle ic-mr-10" id="toggle.myLocation" name="toggle.myLocation" type="checkbox" data-set="myLocation"/>
-                        <label class="form-label form-label-inline" for="toggle.myLocation" title="Afișează locația mea"> Afișează locația mea</label>
-                        <button class="btn btn-sm btn-clear btn-precise-location hide"><span data-icon="&#xe013;"></span></button>
-                    </div>
-                </li>
-            </ul>
-        </form>
-    </div>
+<main><div id="map" data-bind="eyJ1cmwiOiJodHRwczovL21hcHMuZ29vZ2xlYXBpcy5jb20vbWFwcy9hcGkvanM/a2V5PUFJemFTeUNST01Bd0MxdklqYzdFOWw4LWtKOTZ2SGQtdWpPU0dsUSJ9"><div class="spinner"></div></div>
+  <div class="mapControls hide">
+    <h3>Seturi de date <span class="spinner hide"></span></h3>
+    <form name="map-controls">
+      <ul>
+        <li>
+          <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
+            <input class="btn-toggle ic-mr-10" id="toggle.mobility.publicTransportation" name="toggle.mobility.publicTransportation" type="checkbox" data-set="publicTransportation" data-source="https://iasi.digital/assets/js/publicTransportation/app.min.js"/>
+            <label class="form-label form-label-inline" for="toggle.mobility.publicTransportation" title="Afișează date transport public Iași"> Date transport public</label>
+          </div>
+        </li>
+        <li>
+          <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
+            <input class="btn-toggle ic-mr-10" id="toggle.mobility.publicParking" name="toggle.mobility.publicParking" type="checkbox" data-set="publicParking" data-source="https://iasi.digital/assets/js/publicParking/app.min.js"/>
+            <label class="form-label form-label-inline" for="toggle.mobility.publicParking" title="Afișează date parcări"> Date parcări</label>
+          </div>
+        </li>
+        <li>
+          <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
+            <input class="btn-toggle ic-mr-10" id="toggle.environment.airQuality" name="toggle.environment.airQuality" type="checkbox" data-set="airQuality" data-source="https://iasi.digital/assets/js/airQuality/app.min.js"/>
+            <label class="form-label form-label-inline" for="toggle.environment.airQuality" title="Afișează date calitate aer Iași"> Date calitate aer</label>
+          </div>
+        </li>
+        <li>
+          <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
+            <input class="btn-toggle ic-mr-10" id="toggle.environment.wasteCollection" name="toggle.environment.wasteCollection" type="checkbox" data-set="wasteCollection" data-source="https://iasi.digital/assets/js/wasteCollection/app.min.js"/>
+            <label class="form-label form-label-inline" for="toggle.environment.wasteCollection" title="Afișează date colectare deșeuri Iași"> Date colectare deșeuri</label>
+          </div>
+        </li>
+        <li>
+          <div class="form-group form-group-inline form-group-centered fgi-start fqi-as-row">
+            <input class="btn-toggle ic-mr-10" id="toggle.mobility.trafficLayer" name="toggle.mobility.trafficLayer" type="checkbox" data-set="trafficLayer"/>
+            <label class="form-label form-label-inline" for="toggle.mobility.trafficLayer" title="Afișează date trafic"> Date trafic</label>
+          </div>
+        </li>
+      </ul>
+    </form>
+  </div>
+  <p class="notification-floating-placeholder"></p>
 </main>
 </body>
 <script src="https://iasi.digital/assets/js/app.min.js"></script>
