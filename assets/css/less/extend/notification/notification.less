@@ -1,0 +1,70 @@
+/**
+ * Iași Digital
+ * A data-driven perspective of the city.
+ *
+ * @author Innovator Dev <hello@innovator.dev>
+ * @link https://iasi.digital
+ * @link https://oras.digital
+ *
+ * @copyright (c) Iasi Digital [https://iasi.digital]
+ */
+
+.notification {
+  display: table;
+  border-radius: .35em;
+  padding: .5em .75em;
+  margin: .5em auto 1em;
+  color: var(--text-color);
+
+  &.notification-sm {
+    font-size: .9em;
+    padding: .25em .5em;
+  }
+
+  &.notification-inline {
+    display: inline-block;
+  }
+
+  &.error {
+    background: var(--danger);
+    color: var(--text-color-white);
+  }
+
+  &.info {
+    background: var(--notification-info-background-color);
+    color: var(--notification-info-text-color);
+  }
+
+  &.success {
+    background: var(--green);
+    color: var(--text-color-white);
+  }
+
+  &.warning {
+    background: var(--orange);
+    color: var(--text-color-white);
+  }
+
+  // Floating notification
+  &.notification-floating {
+    position: fixed;
+    z-index: 2;
+
+    font-size: .9em;
+    width: 90%;
+
+    // Positioning
+    bottom: 20px;
+    left: 5%;
+
+    @media (min-width: @mediaQueryMedium) {
+      width: auto;
+      left: 2em;
+    }
+  }
+
+  // Fade in animation
+  &.notification-animation {
+    animation: fadeIn 1s;
+  }
+}

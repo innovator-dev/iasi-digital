@@ -71,7 +71,7 @@
     }
 
     h6 {
-      font-width: 500;
+      font-weight: 500;
       font-size: 1em;
       margin: 0 auto .25em;
       padding: 0;
@@ -197,10 +197,42 @@
 
     // Headings
     h6 {
-      font-width: 500;
+      font-weight: 500;
       font-size: 1em;
       margin: 1em auto .25em;
       padding: 0;
+    }
+
+    // Navigation
+    nav {
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: space-around;
+      align-items: center;
+      margin: 1em auto 0;
+
+      input[type=submit], input[type=button], input[type=reset], button, a.btn {
+        .grid;
+        margin: .5em auto 0;
+
+        @media (min-width: @mediaQueryMedium) {
+          width: auto;
+          margin: 0 0 0 .5em;
+        }
+
+        &:first-child {
+          margin: 0;
+        }
+
+        // Move to right
+        &.ml {
+          margin-left: auto;
+        }
+
+        &.mr {
+          margin-right: auto;
+        }
+      }
     }
   }
 }
