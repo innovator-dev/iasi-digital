@@ -17,12 +17,6 @@
 const airQuality = (() => {
 
     /**
-     * Data Set url.
-     * @type {string}
-     */
-    const url = 'https://opendata.oras.digital/api/proxy/';
-
-    /**
      * AQI scale.
      * @type {{pm25: number[], pm10: number[]}}
      */
@@ -63,34 +57,30 @@ const airQuality = (() => {
 
     /**
      * Perform fetch request to API.
-     * @param callback Fetch callback method
+     * @param callback (Optional) Callback to be executed after data is retrieved.
      * @returns {boolean}
      */
-    function fetch(callback = null) {
+    function getData(callback = null) {
 
-        app.api(`${url}`, 'POST', {
-            action: 'fetch',
-            type: 'api',
-            value: 'cf3f-2309-44d1-8e0c-1137'
-        }).then((response) => {
-            if (!response.ok) {
-                return false;
+        // Fetch data
+        return app.fetch({
+            url: app.config.url,
+            method: 'POST',
+            postFields: {
+                action: 'fetch',
+                type: 'api',
+                value: 'cf3f-2309-44d1-8e0c-1137'
+            },
+            callback: (json) => {
+                app.dataSets.airQuality.data.senzors = json;
+                app.dataSets.airQuality.updated = Date.now();
+
+                // Execute callback
+                if (callback) {
+                    callback();
+                }
             }
-
-            return response.json();
-        }).then((json) => {
-            app.dataSets.airQuality.data.senzors = json;
-            app.dataSets.airQuality.updated = Date.now();
-
-            // Callback
-            if (callback !== null) {
-                callback();
-            }
-        }).catch(err => {
-            return false;
         });
-
-        return true;
     }
 
     /**
@@ -109,6 +99,8 @@ const airQuality = (() => {
         // Setup default watcher
         // Run marker rendering
         app.dataSets.airQuality.watcher = setInterval(() => {
+
+            // Execute callback
             if (callback !== null) {
                 callback();
             }
@@ -121,8 +113,9 @@ const airQuality = (() => {
      */
     function init() {
 
-        setWatcher(120000, () => {
-            fetch();
+        // Refresh data every 3 minutes
+        setWatcher(180000, () => {
+            getData();
         });
     }
 
@@ -135,9 +128,9 @@ const airQuality = (() => {
         render();
 
         // Setup watcher
-        // Run marker rendering
-        setWatcher(60000, () => {
-            fetch(() => {
+        // Run marker updated rendering (2 minutes)
+        setWatcher(120000, () => {
+            getData(() => {
                 render();
             });
         });
@@ -152,8 +145,8 @@ const airQuality = (() => {
     function hide() {
 
         // Return watcher to default value
-        setWatcher(120000, () => {
-            fetch();
+        setWatcher(180000, () => {
+            getData();
         });
 
         // Clear pins
@@ -177,7 +170,7 @@ const airQuality = (() => {
 
         if (app.dataSets.airQuality.data.senzors === undefined) {
 
-            fetch(() => {
+            getData(() => {
                 render();
             });
         } else {
@@ -276,48 +269,48 @@ const airQuality = (() => {
         if (concentration >= 0 && concentration <= 50) {
             return {
                 color: '#00e400',
-                heading: 'Sănătos',
-                description: 'Calitatea aerului este considerată satisfăcătoare, poluarea aerului nu prezintă un risc sau riscul este unul scăzut.',
+                heading: app.config.messages['airQuality.title.healthy'],
+                description: app.config.messages['airQuality.message.healthy'],
                 aqi: '0 - 50',
                 css: 'good'
             };
         } else if (concentration > 50 && concentration <= 100) {
             return {
                 color: '#ffff00',
-                heading: 'Moderat',
-                description: 'Calitatea aerului este acceptabilă, unii poluanți pot reprezenta un risc de sănătate pentru un număr mic de oameni.',
+                heading: app.config.messages['airQuality.title.moderate'],
+                description: app.config.messages['airQuality.message.moderate'],
                 aqi: '51 - 100',
                 css: 'moderate'
             };
         } else if (concentration > 100 && concentration <= 150) {
             return {
                 color: '#ff7d00',
-                heading: 'Nesănătos pentru persoane sensibile',
-                description: 'Calitatea aerului poate reprezenta un risc de sănătate pentru persoanele sensibile, cu afecțiuni respiratorii sau cardiace.',
+                heading: app.config.messages['airQuality.title.sensitive'],
+                description: app.config.messages['airQuality.message.sensitive'],
                 aqi: '101 - 150',
                 css: 'unhealthy-sensitive'
             };
         } else if (concentration > 150 && concentration <= 200) {
             return {
                 color: '#fe0000',
-                heading: 'Nesănătos',
-                description: 'Este recomandat ca persoanele cu afecțiuni respiratorii sau cardiace să evite activitățiile susținute și de intensitate ridicată.',
+                heading: app.config.messages['airQuality.title.unhealthy'],
+                description: app.config.messages['airQuality.message.unhealthy'],
                 aqi: '151 - 200',
                 css: 'unhealthy'
             };
         } else if (concentration > 200 && concentration <= 300) {
             return {
                 color: '#99004c',
-                heading: 'Foarte nesănătos',
-                description: 'Este recomandat ca persoanele cu afecțiuni respiratorii sau cardiace să evite activitățiile de orice fel desfășurate în aer liber.',
+                heading: app.config.messages['airQuality.title.veryUnhealthy'],
+                description: app.config.messages['airQuality.message.veryUnhealthy'],
                 aqi: '201 - 300',
                 css: 'very-unhealthy'
             };
         } else if (concentration > 400 && concentration <= 500) {
             return {
                 color: '#7e0022',
-                heading: 'Periculos',
-                description: 'Este recomandat ca persoanele de orice vârstă să evite orice activitate în aer liber.',
+                heading: app.config.messages['airQuality.title.hazardous'],
+                description: app.config.messages['airQuality.message.hazardous'],
                 aqi: '401 - 500',
                 css: 'hazardous'
             };
@@ -341,7 +334,7 @@ const airQuality = (() => {
         init: init,
 
         // Fetch
-        fetch: fetch,
+        getData: getData,
 
         // Show
         show: show,
