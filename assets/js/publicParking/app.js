@@ -13,14 +13,19 @@
 
 /**
  * Public parking map rendering.
+ *
+ * DataSet fields with default values:
+ *  app: null,
+ *  watcher: null,
+ *  loaded: false,
+ *  visible: false,
+ *  hasData: false,
+ *  updated: null,
+ *  data: {},
+ *  markers: [],
+ *  selectedMarker: null
  */
 const publicParking = (() => {
-
-    /**
-     * Data Set url.
-     * @type {string}
-     */
-    const url = 'https://opendata.oras.digital/api/proxy/';
 
     /**
      * UpPark parking mapping.
@@ -43,35 +48,31 @@ const publicParking = (() => {
     };
 
     /**
-     * Perform fetch request to API, vehicles endpoint.
-     * @param callback Fetch callback method
+     * Perform fetch request to API.
+     * @param callback (Optional) Callback to be executed after data is retrieved.
      * @returns {boolean}
      */
-    function fetch(callback = null) {
+    function getData(callback = null) {
 
-        app.api(`${url}`, 'POST', {
-            action: 'fetch',
-            type: 'api',
-            value: '64dc-92f1-4b56-9071-1313/22d1082403b780c66b2687f43de783a10c16'
-        }).then((response) => {
-            if (!response.ok) {
-                return false;
+        // Fetch data
+        return app.fetch({
+            url: app.config.url,
+            method: 'POST',
+            postFields: {
+                action: 'fetch',
+                type: 'api',
+                value: '64dc-92f1-4b56-9071-1313/22d1082403b780c66b2687f43de783a10c16'
+            },
+            callback: (json) => {
+                app.dataSets.publicParking.data.places = json;
+                app.dataSets.publicParking.updated = Date.now();
+
+                // Execute callback
+                if (callback) {
+                    callback();
+                }
             }
-
-            return response.json();
-        }).then((json) => {
-            app.dataSets.publicParking.data.places = json;
-            app.dataSets.publicParking.updated = Date.now();
-
-            // Callback
-            if (callback !== null) {
-                callback();
-            }
-        }).catch(err => {
-            return false;
         });
-
-        return true;
     }
 
     /**
@@ -90,6 +91,8 @@ const publicParking = (() => {
         // Setup default watcher
         // Run marker rendering
         app.dataSets.publicParking.watcher = setInterval(() => {
+
+            // Execute callback
             if (callback !== null) {
                 callback();
             }
@@ -102,11 +105,10 @@ const publicParking = (() => {
      */
     function init() {
 
-        // Refresh data every 2 minutes
-        // Disable refresh watcher at init
-        // setWatcher(120000, () => {
-        //    fetch();
-        // });
+        // Refresh data every 3 minutes
+        setWatcher(180000, () => {
+            getData();
+        });
     }
 
     /**
@@ -118,9 +120,9 @@ const publicParking = (() => {
         render();
 
         // Setup watcher
-        // Run marker rendering
-        setWatcher(60000, () => {
-            fetch(() => {
+        // Run marker updated rendering (1.5 minutes)
+        setWatcher(90000, () => {
+            getData(() => {
                 render();
             });
         });
@@ -134,9 +136,9 @@ const publicParking = (() => {
      */
     function hide() {
 
-        // Return watcher to default value (2 minutes)
-        setWatcher(120000, () => {
-            fetch();
+        // Return watcher to default value (3 minutes)
+        setWatcher(180000, () => {
+            getData();
         });
 
         // Clear pins
@@ -152,7 +154,7 @@ const publicParking = (() => {
         // Mark dataSet hidden
         app.dataSets.publicParking.visible = false;
 
-        // Reset any direction service query
+        // Reset any existing direction service query
         app.events.fire('clearDirectionService');
     }
 
@@ -164,7 +166,7 @@ const publicParking = (() => {
         // Render parking spots
         if (app.dataSets.publicParking.data.places === undefined) {
 
-            fetch(() => {
+            getData(() => {
                 render();
             });
         } else {
@@ -184,15 +186,15 @@ const publicParking = (() => {
                             optimized: true,
                             icon: {
                                 url: `${app.cdn}pin/public-parking/${entry.stare}.png`,
-                                size: new google.maps.Size(28, 44),
+                                size: new google.maps.Size(22, 35),
                                 origin: new google.maps.Point(0, 0),
-                                anchor: new google.maps.Point(0, 22),
-                                scaledSize: new google.maps.Size(28, 44)
+                                anchor: new google.maps.Point(11, 35),
+                                scaledSize: new google.maps.Size(22, 35)
                             }
                         }),
                         lastUpdate: Date.now(),
                         visible: true,
-                        popup: `<div id="mapPopup"><header><span class="label parking parking-${entry.stare} ic-mr-10">P</span><h5>${parseInt(entry.stare) === 1 ? 'Liber' : parseInt(entry.stare) === 2 ? 'Ocupat' : 'Rezervat'}</h5></header><main><ul><li><strong>Număr loc parcare</strong>: ${entry.numar}</li><li><strong>Parcare</strong>: ${parkingMapping[entry.parkingId]}</li></ul><nav><button class="btn btn-render-direction" data-lat="${parseFloat(entry.latitude)}" data-lng="${parseFloat(entry.longitude)}">Afișează rută <span data-icon="&#xe018;" class="ic-ml-5"></span></button></nav></main></div>`
+                        popup: `<div id="mapPopup"><header><span class="label parking parking-${entry.stare} ic-mr-10">P</span><h5>${parseInt(entry.stare) === 1 ? 'Liber' : parseInt(entry.stare) === 2 ? 'Ocupat' : 'Rezervat'}</h5></header><main><ul><li><strong>Număr loc parcare</strong>: ${entry.numar}</li><li><strong>Parcare</strong>: ${parkingMapping[entry.parkingId]}</li></ul>${parseInt(entry.stare) === 1 ? `<nav><button class="btn btn-render-direction" data-lat="${parseFloat(entry.latitude)}" data-lng="${parseFloat(entry.longitude)}">Afișează rută <span data-icon="&#xe018;" class="ic-ml-5"></span></button></nav>` : ''}</main></div>`
                     };
 
                     app.dataSets.publicParking.markers[entry.sensorId].ref.addListener('click', () => {
@@ -222,42 +224,43 @@ const publicParking = (() => {
 
                         google.maps.event.addListener(app.map.popup, 'domready', () => {
                             const showRouteButton = document.querySelector('.btn-render-direction');
-                            showRouteButton.addEventListener('click', (e) => {
+                            if (showRouteButton) {
+                                showRouteButton.addEventListener('click', (e) => {
 
-                                // Get parking place location
-                                let parkingPlaceLat = parseFloat(showRouteButton.getAttribute('data-lat')) || 0,
-                                    parkingPlaceLng = parseFloat(showRouteButton.getAttribute('data-lng')) || 0;
+                                    // Get parking place location
+                                    let parkingPlaceLat = parseFloat(showRouteButton.getAttribute('data-lat')) || 0,
+                                        parkingPlaceLng = parseFloat(showRouteButton.getAttribute('data-lng')) || 0;
 
-                                // Validate if myLocation has data
-                                try {
+                                    // Validate if myLocation has data
+                                    try {
 
-                                    if (app.map.direction.service === null) {
-                                        app.events.fire('initiateDirectionService');
-                                    }
-
-                                    // Validate user location
-                                    if (app.me.location.lat === 0 || app.me.location.lng === 0) {
-                                        throw `Nu a putut fi determinată poziția. Pentru a putea afișa traseul, este necesară activarea locației.`;
-                                    }
-
-                                    if (parkingPlaceLat === 0 || parkingPlaceLng === 0) {
-                                        throw `Nu a putut fi determinată poziția locului de parcare.`;
-                                    }
-
-                                    app.map.direction.service.route({
-                                        origin: new google.maps.LatLng(app.me.location.lat, app.me.location.lng),
-                                        destination: new google.maps.LatLng(parkingPlaceLat, parkingPlaceLng),
-                                        travelMode: 'DRIVING'
-                                    }, function (res, status) {
-                                        if (status === 'OK') {
-                                            console.log(res);
-                                            app.map.direction.renderer.setDirections(res);
+                                        if (app.map.direction.service === null) {
+                                            app.events.fire('initiateDirectionService');
                                         }
-                                    });
-                                } catch (err) {
-                                    app.notify(err, 'error', 10);
-                                }
-                            });
+
+                                        // Validate user location
+                                        if (app.me.location.lat === 0 || app.me.location.lng === 0 && app.config.messages['route.error.unableToDetermine']) {
+                                            throw app.config.messages['route.error.unableToDetermine'];
+                                        }
+
+                                        if (parkingPlaceLat === 0 || parkingPlaceLng === 0 && app.config.messages['parking.error.unableToDetermineLocation']) {
+                                            throw app.config.messages['parking.error.unableToDetermineLocation'];
+                                        }
+
+                                        app.map.direction.service.route({
+                                            origin: new google.maps.LatLng(app.me.location.lat, app.me.location.lng),
+                                            destination: new google.maps.LatLng(parkingPlaceLat, parkingPlaceLng),
+                                            travelMode: 'DRIVING'
+                                        }, function (res, status) {
+                                            if (status === 'OK') {
+                                                app.map.direction.renderer.setDirections(res);
+                                            }
+                                        });
+                                    } catch (err) {
+                                        app.notify(err, 'error', 10);
+                                    }
+                                });
+                            }
                         });
                     });
 
@@ -266,7 +269,7 @@ const publicParking = (() => {
                     // Update data
                     app.dataSets.publicParking.markers[entry.sensorId]['state'] = entry.stare;
                     app.dataSets.publicParking.markers[entry.sensorId]['lastUpdate'] = Date.now();
-                    app.dataSets.publicParking.markers[entry.sensorId]['popup'] = `<div id="mapPopup"><header><span class="label parking parking-${entry.stare} ic-mr-10">P</span><h5>${parseInt(entry.stare) === 1 ? 'Liber' : parseInt(entry.stare) === 2 ? 'Ocupat' : 'Rezervat'}</h5></header><main><ul><li><strong>Număr loc parcare</strong>: ${entry.numar}</li><li><strong>Parcare</strong>: ${parkingMapping[entry.parkingId]}</li></ul><nav><button class="btn  btn-render-direction" data-lat="${parseFloat(entry.latitude)}" data-lng="${parseFloat(entry.longitude)}">Afișează rută <span data-icon="&#xe018;" class="ic-ml-5"></span></button></nav></main></div>`
+                    app.dataSets.publicParking.markers[entry.sensorId]['popup'] = `<div id="mapPopup"><header><span class="label parking parking-${entry.stare} ic-mr-10">P</span><h5>${parseInt(entry.stare) === 1 ? 'Liber' : parseInt(entry.stare) === 2 ? 'Ocupat' : 'Rezervat'}</h5></header><main><ul><li><strong>Număr loc parcare</strong>: ${entry.numar}</li><li><strong>Parcare</strong>: ${parkingMapping[entry.parkingId]}</li></ul>${parseInt(entry.stare) === 1 ? `<nav><button class="btn btn-render-direction" data-lat="${parseFloat(entry.latitude)}" data-lng="${parseFloat(entry.longitude)}">Afișează rută <span data-icon="&#xe018;" class="ic-ml-5"></span></button></nav>` : ''}</main></div>`
                 }
             });
         }
@@ -281,7 +284,7 @@ const publicParking = (() => {
         init: init,
 
         // Fetch
-        fetch: fetch,
+        getData: getData,
 
         // Show
         show: show,
