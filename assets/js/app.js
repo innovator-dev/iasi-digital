@@ -672,7 +672,7 @@ const app = (() => {
                                     map.ref.panTo(new google.maps.LatLng(lat, lng));
                                 }
 
-                            }, (err) => {
+                            }, () => {
 
                                 try {
                                     // Clear marker
@@ -700,7 +700,7 @@ const app = (() => {
 
                                     // Show warning that location coult not be determined
                                     if (app.config.messages['location.error.unableToDetermine']) {
-                                        throw app.config.messages['location.error.unableToDetermine'];
+                                        notification(app.config.messages['location.error.unableToDetermine'], 'error', 10);
                                     }
 
                                 } catch (err) {
