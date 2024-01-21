@@ -122,7 +122,8 @@ const app = (() => {
         location: {
             lat: 0,
             lng: 0
-        }
+        },
+        persistent: false
     };
 
     /**
@@ -376,6 +377,8 @@ const app = (() => {
 
                 // Create center map control
                 const centerMapControlContainer = document.createElement('div');
+                centerMapControlContainer.classList.add('mapControlsContainer');
+
                 const centerMapControl = document.createElement('button');
                 centerMapControl.classList.add('mapCustomControl');
                 centerMapControl.innerHTML = `<span data-icon="&#xe013;"></span>`;
@@ -403,11 +406,36 @@ const app = (() => {
 
                 // Create my location control
                 const myLocationControlContainer = document.createElement('div');
+                myLocationControlContainer.classList.add('mapControlsContainer');
+
+                const myLocationPersistentControl = document.createElement('button');
+                myLocationPersistentControl.setAttribute('data-state', 'disabled');
+                myLocationPersistentControl.classList.add('mapCustomControl', 'separator', 'hide');
+                myLocationPersistentControl.innerHTML = `<span data-icon="&#xe015;"></span>`;
+                myLocationPersistentControl.title = 'Activează/Dezactivează localizarea persistentă'
+                myLocationPersistentControl.type = 'button';
+
+                myLocationPersistentControl.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (myLocationPersistentControl.getAttribute('data-state') === 'disabled') {
+                        myLocationPersistentControl.setAttribute('data-state', 'enabled');
+                        myLocationPersistentControl.classList.add('selected');
+                        my.persistent = true;
+                    }
+                    else {
+                        myLocationPersistentControl.setAttribute('data-state', 'disabled');
+                        myLocationPersistentControl.classList.remove('selected');
+                        my.persistent = false;
+                    }
+                });
+
                 const myLocationControl = document.createElement('button');
                 myLocationControl.setAttribute('data-state', 'hideLocation');
                 myLocationControl.classList.add('mapCustomControl', 'separator');
-                myLocationControl.innerHTML = `<span data-icon="&#xe015;"></span>`;
-                myLocationControl.title = `Afișează/Ascunde locația mea`;
+                myLocationControl.innerHTML = `<span data-icon="&#xe016;"></span>`;
+                myLocationControl.title = `Afișează/Ascunde locația mea pe hartă`;
                 myLocationControl.type = 'button';
 
                 myLocationControl.addEventListener('click', (e) => {
@@ -422,8 +450,11 @@ const app = (() => {
                             myLocationControl.setAttribute('data-state', 'showLocation');
                             myLocationControl.classList.add('selected');
 
+                            // Show persistent location control
+                            myLocationPersistentControl.classList.remove('hide');
+
                             // Initiate direction service
-                            events.fire('initiateDirectionService');
+                            // events.fire('initiateDirectionService');
 
                             // Show my location
                             my.watcher = navigator.geolocation.watchPosition((position) => {
@@ -458,7 +489,9 @@ const app = (() => {
                                 my.lastUpdate = new Date().getTime();
                                 my.visible = true;
 
-                                map.ref.panTo(new google.maps.LatLng(lat, lng));
+                                if (my.persistent === true) {
+                                    map.ref.panTo(new google.maps.LatLng(lat, lng));
+                                }
 
                             }, () => {
 
@@ -484,7 +517,7 @@ const app = (() => {
                                     my.location.lng = 0;
 
                                     // Reset any direction service query
-                                    app.events.fire('clearDirectionService');
+                                    // app.events.fire('clearDirectionService');
 
                                     // Show warning...
                                     throw 'Nu a putut fi determinată poziția. Verificați dacă browser-ul are permisiunea de a prelua locația.';
@@ -495,6 +528,14 @@ const app = (() => {
                                     myLocationControl.setAttribute('data-state', 'hideLocation');
                                     myLocationControl.classList.remove('selected');
                                     myLocationControl.setAttribute('disabled', 'disabled');
+
+                                    // Disable persistent location control
+                                    myLocationPersistentControl.classList.remove('selected');
+                                    myLocationPersistentControl.classList.add('hide');
+                                    myLocationPersistentControl.setAttribute('data-state', 'disabled');
+
+                                    // Disable persistent flag
+                                    my.persistent = false;
                                 }
 
                             }, {enableHighAccuracy: true, timeout: 5000});
@@ -502,6 +543,14 @@ const app = (() => {
                         } else {
                             myLocationControl.setAttribute('data-state', 'hideLocation');
                             myLocationControl.classList.remove('selected');
+
+                            // Disable persistent location control
+                            myLocationPersistentControl.classList.remove('selected');
+                            myLocationPersistentControl.classList.add('hide');
+                            myLocationPersistentControl.setAttribute('data-state', 'disabled');
+
+                            // Disable persistent flag
+                            my.persistent = false;
 
                             // Hide my location
                             // Clear marker
@@ -525,7 +574,7 @@ const app = (() => {
                             my.location.lng = 0;
 
                             // Reset any direction service query
-                            app.events.fire('clearDirectionService');
+                            // app.events.fire('clearDirectionService');
                         }
 
                     } else {
@@ -534,10 +583,14 @@ const app = (() => {
                         myLocationControl.setAttribute('data-state', 'hideLocation');
                         myLocationControl.classList.remove('selected');
                         myLocationControl.setAttribute('disabled', 'disabled');
+
+                        // Hide persistent location control
+                        myLocationPersistentControl.classList.add('hide');
                     }
                 });
 
                 // Append to container
+                myLocationControlContainer.appendChild(myLocationPersistentControl);
                 myLocationControlContainer.appendChild(myLocationControl);
 
                 // Position custom button
