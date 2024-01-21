@@ -17,41 +17,31 @@
 const publicTransportation = (() => {
 
     /**
-     * Data Set url.
-     * @type {string}
-     */
-    const url = 'https://opendata.oras.digital/api/proxy/';
-
-    /**
-     * Perform fetch request to API, vehicles endpoint.
-     * @param callback Fetch callback method
+     * Perform fetch request to API.
+     * @param callback (Optional) Callback to be executed after data is retrieved.
      * @returns {boolean}
      */
-    function fetch(callback = null) {
+    function getData(callback = null) {
 
-        app.api(`${url}`, 'POST', {
-            action: 'fetch',
-            type: 'api',
-            value: 'dc2a-cd0a-477f-95f3-1107'
-        }).then((response) => {
-            if (!response.ok) {
-                return false;
+        // Fetch data
+        return app.fetch({
+            url: app.config.url,
+            method: 'POST',
+            postFields: {
+                action: 'fetch',
+                type: 'api',
+                value: 'dc2a-cd0a-477f-95f3-1107'
+            },
+            callback: (json) => {
+                app.dataSets.publicTransportation.data.vehicles = json;
+                app.dataSets.publicTransportation.updated = Date.now();
+
+                // Execute callback
+                if (callback) {
+                    callback();
+                }
             }
-
-            return response.json();
-        }).then((json) => {
-            app.dataSets.publicTransportation.data.vehicles = json;
-            app.dataSets.publicTransportation.updated = Date.now();
-
-            // Callback
-            if (callback !== null) {
-                callback();
-            }
-        }).catch(err => {
-            return false;
         });
-
-        return true;
     }
 
     /**
@@ -60,34 +50,27 @@ const publicTransportation = (() => {
      */
     function populateRoutes() {
 
-        // Shapes URL
+        // Routes config
         const routes = `${app.cdn}js/publicTransportation/routes.json`;
         // const routes = `https://iasidigital.idealweb.ro/assets/js/publicTransportation/routes.json`;
 
-        // Populate shapes
-        app.api(`${routes}`).then((response) => {
-            if (!response.ok) {
-                return false;
+        // Fetch routes
+        return app.fetch({
+            url: routes,
+            callback: (json) => {
+                app.dataSets.publicTransportation.data.routes = {};
+
+                // Parse results
+                json.forEach((route) => {
+                    app.dataSets.publicTransportation.data.routes[route.route_id] = {
+                        name: route.route_short_name,
+                        long: route.route_long_name,
+                        type: route.route_type,
+                        color: route.route_color
+                    };
+                });
             }
-
-            return response.json();
-        }).then((json) => {
-            app.dataSets.publicTransportation.data.routes = {};
-
-            json.forEach((route) => {
-                app.dataSets.publicTransportation.data.routes[route.route_id] = {
-                    name: route.route_short_name,
-                    long: route.route_long_name,
-                    type: route.route_type,
-                    color: route.route_color
-                };
-            });
-
-        }).catch(err => {
-            return false;
         });
-
-        return true;
     }
 
     /**
@@ -96,33 +79,26 @@ const publicTransportation = (() => {
      */
     function populateShapes() {
 
-        // Shapes URL
+        // Shapes config
         const shapes = `${app.cdn}js/publicTransportation/shapes.json`;
         // const shapes = `https://iasidigital.idealweb.ro/assets/js/publicTransportation/shapes.json`;
 
-        // Populate shapes
-        app.api(`${shapes}`).then((response) => {
-            if (!response.ok) {
-                return false;
+        // Fetch shapes
+        return app.fetch({
+            url: routes,
+            callback: (json) => {
+                app.dataSets.publicTransportation.data.shapes = {};
+
+                // Parse results
+                json.forEach((route) => {
+                    app.dataSets.publicTransportation.data.shapes[shape.shape_id] = {
+                        lat: shape.shape_pt_lat,
+                        long: shape.shape_pt_lon,
+                        seq: shape.shape_pt_sequence
+                    };
+                });
             }
-
-            return response.json();
-        }).then((json) => {
-            app.dataSets.publicTransportation.data.shapes = {};
-
-            json.forEach((shape) => {
-                app.dataSets.publicTransportation.data.shapes[shape.shape_id] = {
-                    lat: shape.shape_pt_lat,
-                    long: shape.shape_pt_lon,
-                    seq: shape.shape_pt_sequence
-                };
-            });
-
-        }).catch(err => {
-            return false;
         });
-
-        return true;
     }
 
     /**
@@ -132,37 +108,34 @@ const publicTransportation = (() => {
      */
     function populateTrips(callback = null) {
 
-        app.api(`${url}`, 'POST', {
-            action: 'fetch',
-            type: 'api',
-            value: 'dc2a-cd0a-477f-95f3-1107/52cf25d5c64d1f700b8867cee05112525698'
-        }).then((response) => {
-            if (!response.ok) {
-                return false;
+        // Fetch data
+        return app.fetch({
+            url: app.config.url,
+            method: 'POST',
+            postFields: {
+                action: 'fetch',
+                type: 'api',
+                value: 'dc2a-cd0a-477f-95f3-1107/52cf25d5c64d1f700b8867cee05112525698'
+            },
+            callback: (json) => {
+                app.dataSets.publicTransportation.data.trips = {};
+
+                json.forEach((trip) => {
+                    app.dataSets.publicTransportation.data.trips[trip.trip_id] = {
+                        route: trip.route_id,
+                        trip: trip.trip_id,
+                        headSign: trip.trip_headsign,
+                        direction: trip.direction_id,
+                        shape: trip.shape_id
+                    };
+                });
+
+                // Execute callback
+                if (callback) {
+                    callback();
+                }
             }
-
-            return response.json();
-        }).then((json) => {
-            app.dataSets.publicTransportation.data.trips = {};
-
-            json.forEach((trip) => {
-                app.dataSets.publicTransportation.data.trips[trip.route_id] = {
-                    trip: trip.trip_id,
-                    headSign: trip.trip_headsign,
-                    direction: trip.direction_id,
-                    shape: trip.shape_id
-                };
-            });
-
-            // Callback
-            if (callback !== null) {
-                callback();
-            }
-        }).catch(err => {
-            return false;
         });
-
-        return true;
     }
 
     /**
@@ -181,6 +154,8 @@ const publicTransportation = (() => {
         // Setup default watcher
         // Run marker rendering
         app.dataSets.publicTransportation.watcher = setInterval(() => {
+
+            // Execute callback
             if (callback !== null) {
                 callback();
             }
@@ -202,8 +177,9 @@ const publicTransportation = (() => {
         // Fetch trips
         populateTrips();
 
+        // Refresh data every 1 minute
         setWatcher(60000, () => {
-            fetch();
+            getData();
         });
     }
 
@@ -216,9 +192,9 @@ const publicTransportation = (() => {
         render();
 
         // Setup watcher
-        // Run marker rendering
+        // Run marker updated rendering (20 seconds)
         setWatcher(20000, () => {
-            fetch(() => {
+            getData(() => {
                 render();
             });
         });
@@ -234,7 +210,7 @@ const publicTransportation = (() => {
 
         // Return watcher to default value
         setWatcher(60000, () => {
-            fetch();
+            getData();
         });
 
         // Clear pins
@@ -268,7 +244,7 @@ const publicTransportation = (() => {
 
         // Render vehicles
         if (app.dataSets.publicTransportation.data.vehicles === undefined) {
-            fetch(() => {
+            getData(() => {
                 render();
             });
         } else {
@@ -279,14 +255,14 @@ const publicTransportation = (() => {
                 let timeSinceLastUpdate = app.dateDiff(entry.timestamp, true);
 
                 // Validate entry
-                if (entry.latitude && entry.longitude && entry.route_id !== undefined && app.dataSets.publicTransportation.data.routes[entry.route_id] !== undefined && app.dataSets.publicTransportation.data.trips[entry.route_id] !== undefined && timeSinceLastUpdate < 60) {
+                if (entry.latitude && entry.longitude && entry.route_id && entry.trip_id && app.dataSets.publicTransportation.data.routes[entry.route_id] && app.dataSets.publicTransportation.data.trips[entry.trip_id] && timeSinceLastUpdate < 60) {
 
                     // Get matching route for current vehicle
                     let vehicleRoute = app.dataSets.publicTransportation.data.routes[entry.route_id].name.trim(),
                         vehicleRouteLong = app.dataSets.publicTransportation.data.routes[entry.route_id].long.trim(),
                         vehicleType = app.dataSets.publicTransportation.data.routes[entry.route_id].type,
-                        vehicleTripHeadSign = app.dataSets.publicTransportation.data.trips[entry.route_id].headSign.trim(),
-                        vehicleTripDirection = app.dataSets.publicTransportation.data.trips[entry.route_id].direction;
+                        vehicleTripHeadSign = app.dataSets.publicTransportation.data.trips[entry.trip_id].headSign.trim(),
+                        vehicleTripDirection = app.dataSets.publicTransportation.data.trips[entry.trip_id].direction;
 
                     if (app.dataSets.publicTransportation.markers[entry.label]) {
 
@@ -310,10 +286,10 @@ const publicTransportation = (() => {
                                 optimized: true,
                                 icon: {
                                     url: `${app.cdn}pin/public-transportation/${vehicleRoute !== null ? `${vehicleRoute}.png` : `${vehicleType === 0 ? 'tram' : 'bus'}.png`}`,
-                                    size: new google.maps.Size(28, 44),
+                                    size: new google.maps.Size(22, 35),
                                     origin: new google.maps.Point(0, 0),
-                                    anchor: new google.maps.Point(0, 22),
-                                    scaledSize: new google.maps.Size(28, 44)
+                                    anchor: new google.maps.Point(11, 35),
+                                    scaledSize: new google.maps.Size(22, 35)
                                 }
                             }),
                             lastUpdate: entry.timestamp,
@@ -358,7 +334,7 @@ const publicTransportation = (() => {
         init: init,
 
         // Fetch
-        fetch: fetch,
+        getData: getData,
 
         // Show
         show: show,
