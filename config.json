@@ -1,0 +1,20 @@
+{
+  "messages": {
+    "apiCall.error.missingUrl": "Eroare preluare date.",
+    "location.error.unableToDetermine": "Locația nu a putut fi determinată. Te rugăm să verifici dacă localizarea este activată în browser.",
+    "route.error.unableToDetermine": "Traseul nu a putut fi afișat, eroare determinare locație. Activează mecanismul de localizare apăsând pe butonul din drepta jos al hărții.",
+    "parking.error.unableToDetermineLocation": "Locația locului de parcare nu a putut fi determinată.",
+    "airQuality.title.healthy": "Sănătos",
+    "airQuality.message.healthy": "Calitatea aerului este considerată satisfăcătoare, poluarea aerului nu prezintă un risc sau riscul este unul scăzut.",
+    "airQuality.title.moderate": "Moderat",
+    "airQuality.message.moderate": "Calitatea aerului este acceptabilă, unii poluanți pot reprezenta un risc de sănătate pentru un număr mic de oameni.",
+    "airQuality.title.sensitive": "Nesănătos pentru persoane sensibile",
+    "airQuality.message.sensitive": "Calitatea aerului poate reprezenta un risc de sănătate pentru persoanele sensibile, cu afecțiuni respiratorii sau cardiace.",
+    "airQuality.title.unhealthy": "Nesănătos",
+    "airQuality.message.unhealthy": "Este recomandat ca persoanele cu afecțiuni respiratorii sau cardiace să evite activitățiile susținute și de intensitate ridicată.",
+    "airQuality.title.veryUnhealthy": "Foarte nesănătos",
+    "airQuality.message.veryUnhealthy": "Este recomandat ca persoanele cu afecțiuni respiratorii sau cardiace să evite activitățiile de orice fel desfășurate în aer liber.",
+    "airQuality.title.hazardous": "Periculos",
+    "airQuality.message.hazardous": "Este recomandat ca persoanele de orice vârstă să evite orice activitate în aer liber."
+  }
+}
