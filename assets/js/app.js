@@ -454,7 +454,7 @@ const app = (() => {
                             myLocationPersistentControl.classList.remove('hide');
 
                             // Initiate direction service
-                            // events.fire('initiateDirectionService');
+                            events.fire('initiateDirectionService');
 
                             // Show my location
                             my.watcher = navigator.geolocation.watchPosition((position) => {
@@ -517,7 +517,7 @@ const app = (() => {
                                     my.location.lng = 0;
 
                                     // Reset any direction service query
-                                    // app.events.fire('clearDirectionService');
+                                    app.events.fire('clearDirectionService');
 
                                     // Show warning...
                                     throw 'Nu a putut fi determinată poziția. Verificați dacă browser-ul are permisiunea de a prelua locația.';
@@ -574,7 +574,7 @@ const app = (() => {
                             my.location.lng = 0;
 
                             // Reset any direction service query
-                            // app.events.fire('clearDirectionService');
+                            app.events.fire('clearDirectionService');
                         }
 
                     } else {
