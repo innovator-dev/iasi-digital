@@ -240,11 +240,11 @@ const publicParking = (() => {
 
                                         // Validate user location
                                         if (app.me.location.lat === 0 || app.me.location.lng === 0 && app.config.messages['route.error.unableToDetermine']) {
-                                            throw app.config.messages['route.error.unableToDetermine'];
+                                            app.notify(app.config.messages['route.error.unableToDetermine'], 'error', 10);
                                         }
 
                                         if (parkingPlaceLat === 0 || parkingPlaceLng === 0 && app.config.messages['parking.error.unableToDetermineLocation']) {
-                                            throw app.config.messages['parking.error.unableToDetermineLocation'];
+                                            app.notify(app.config.messages['parking.error.unableToDetermineLocation'], 'error', 10);
                                         }
 
                                         app.map.direction.service.route({
