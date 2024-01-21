@@ -17,41 +17,31 @@
 const wasteCollection = (() => {
 
     /**
-     * Data Set url.
-     * @type {string}
-     */
-    const url = 'https://opendata.oras.digital/api/proxy/';
-
-    /**
      * Perform fetch request to API.
-     * @param callback Fetch callback method
+     * @param callback (Optional) Callback to be executed after data is retrieved.
      * @returns {boolean}
      */
-    function fetch(callback = null) {
+    function getData(callback = null) {
 
-        app.api(`${url}`, 'POST', {
-            action: 'fetch',
-            type: 'api',
-            value: '544f-2a7a-490a-ac5c-0f79'
-        }).then((response) => {
-            if (!response.ok) {
-                return false;
+        // Fetch data
+        return app.fetch({
+            url: app.config.url,
+            method: 'POST',
+            postFields: {
+                action: 'fetch',
+                type: 'api',
+                value: '544f-2a7a-490a-ac5c-0f79'
+            },
+            callback: (json) => {
+                app.dataSets.wasteCollection.data.vehicles = json;
+                app.dataSets.wasteCollection.updated = Date.now();
+
+                // Execute callback
+                if (callback) {
+                    callback();
+                }
             }
-
-            return response.json();
-        }).then((json) => {
-            app.dataSets.wasteCollection.data.vehicles = json;
-            app.dataSets.wasteCollection.updated = Date.now();
-
-            // Callback
-            if (callback !== null) {
-                callback();
-            }
-        }).catch(err => {
-            return false;
         });
-
-        return true;
     }
 
     /**
@@ -70,6 +60,8 @@ const wasteCollection = (() => {
         // Setup default watcher
         // Run marker rendering
         app.dataSets.wasteCollection.watcher = setInterval(() => {
+
+            // Execute callback
             if (callback !== null) {
                 callback();
             }
@@ -82,8 +74,9 @@ const wasteCollection = (() => {
      */
     function init() {
 
-        setWatcher(60000, () => {
-            fetch();
+        // Refresh data every 2 minutes
+        setWatcher(120000, () => {
+            getData();
         });
     }
 
@@ -96,9 +89,9 @@ const wasteCollection = (() => {
         render();
 
         // Setup watcher
-        // Run marker rendering
+        // Run marker updated rendering (30 seconds)
         setWatcher(30000, () => {
-            fetch(() => {
+            getData(() => {
                 render();
             });
         });
@@ -113,8 +106,8 @@ const wasteCollection = (() => {
     function hide() {
 
         // Return watcher to default value
-        setWatcher(60000, () => {
-            fetch();
+        setWatcher(120000, () => {
+            getData();
         });
 
         // Clear pins
@@ -138,7 +131,7 @@ const wasteCollection = (() => {
 
         if (app.dataSets.wasteCollection.data.vehicles === undefined) {
 
-            fetch(() => {
+            getData(() => {
                 render();
             });
         } else {
@@ -170,10 +163,10 @@ const wasteCollection = (() => {
                                     optimized: true,
                                     icon: {
                                         url: `${app.cdn}pin/waste-collection/vehicle.png`,
-                                        size: new google.maps.Size(28, 44),
+                                        size: new google.maps.Size(22, 35),
                                         origin: new google.maps.Point(0, 0),
-                                        anchor: new google.maps.Point(0, 22),
-                                        scaledSize: new google.maps.Size(28, 44)
+                                        anchor: new google.maps.Point(11, 35),
+                                        scaledSize: new google.maps.Size(22, 35)
                                     }
                                 }),
                                 lastUpdate: entry.LastRecordDT,
@@ -221,7 +214,7 @@ const wasteCollection = (() => {
         init: init,
 
         // Fetch
-        fetch: fetch,
+        getData: getData,
 
         // Show
         show: show,
