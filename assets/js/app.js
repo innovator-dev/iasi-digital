@@ -133,6 +133,12 @@ const app = (() => {
     const cdn = 'https://iasi.digital/assets/';
 
     /**
+     * Application configuration.
+     * @type {{}}
+     */
+    let configuration = {};
+
+    /**
      * Calculate date difference between given date and current and returns difference in minutes.
      * @param date Date to compare with current timestamp
      * @param utc (Optional) Flag to calculate date difference in UTC
@@ -328,6 +334,179 @@ const app = (() => {
     }
 
     /**
+     * Perform fetch request to API.
+     * @param args Fetch arguments
+     * @returns {boolean}
+     *
+     * Arguments:
+     *  url: API url
+     *  method: (Optional) HTTP method. If method value is missing, GET is considered default
+     *  postFields: (Optional) POST fields if HTTP method is a POST request
+     *  callback: (Optional) Callback method
+     */
+    function getData(args) {
+
+        try {
+
+            // Validate arguments
+            if (!args.url && app.config.messages['apiCall.error.missingUrl']) {
+                notification(app.config.messages['apiCall.error.missingUrl'], 'error', 10);
+            }
+
+            // Perform API call
+            app.api(args.url, args.method || 'GET', args.postFields || {})
+                .then((response) => {
+                    if (!response.ok) {
+                        return false;
+                    }
+
+                    return response.json();
+                })
+                .then((json) => {
+
+                    // Callback
+                    if (args.callback !== null) {
+                        args.callback(json);
+                    }
+                })
+                .catch(err => {
+                    return false;
+                });
+
+            return true;
+
+        } catch (err) {
+            notification(err, 'error', 10);
+        }
+    }
+
+    /**
+     * Render Google Maps.
+     */
+    function renderMap() {
+
+        // Render map
+        events.add('renderMap', () => {
+
+            const mapDiv = document.querySelector('#map');
+            if (mapDiv && app.config.map) {
+
+                // Load map
+                load(app.config.map, () => {
+                    map.ref = new google.maps.Map(mapDiv, {
+                        center: map.mapCenter,
+                        zoom: 14,
+                        streetViewControl: false,
+                        mapTypeControl: false,
+                        fullscreenControl: false,
+                        styles: [
+                            {
+                                "featureType": "administrative",
+                                "elementType": "labels.text.fill",
+                                "stylers": [
+                                    {
+                                        "color": "#444444"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "landscape",
+                                "elementType": "all",
+                                "stylers": [
+                                    {
+                                        "color": "#f2f2f2"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "poi",
+                                "elementType": "all",
+                                "stylers": [
+                                    {
+                                        "visibility": "on"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "poi.business",
+                                "elementType": "geometry.fill",
+                                "stylers": [
+                                    {
+                                        "visibility": "off"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road",
+                                "elementType": "all",
+                                "stylers": [
+                                    {
+                                        "saturation": -100
+                                    },
+                                    {
+                                        "lightness": 45
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road.highway",
+                                "elementType": "all",
+                                "stylers": [
+                                    {
+                                        "visibility": "simplified"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "road.arterial",
+                                "elementType": "labels.icon",
+                                "stylers": [
+                                    {
+                                        "visibility": "on"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "transit",
+                                "elementType": "all",
+                                "stylers": [
+                                    {
+                                        "visibility": "on"
+                                    }
+                                ]
+                            },
+                            {
+                                "featureType": "water",
+                                "elementType": "all",
+                                "stylers": [
+                                    {
+                                        "color": "#b4d4e1"
+                                    },
+                                    {
+                                        "visibility": "on"
+                                    }
+                                ]
+                            }
+                        ]
+                    });
+
+                    google.maps.event.addListenerOnce(map.ref, 'tilesloaded', () => {
+
+                        // Mark map as loaded
+                        map.loaded = true;
+
+                        // Show map controls
+                        events.fire('mapRenderControls');
+                    });
+                });
+            }
+        });
+
+        // Trigger map loading
+        events.fire('renderMap');
+    }
+
+    /**
      * Render page components.
      */
     function render() {
@@ -423,8 +602,7 @@ const app = (() => {
                         myLocationPersistentControl.setAttribute('data-state', 'enabled');
                         myLocationPersistentControl.classList.add('selected');
                         my.persistent = true;
-                    }
-                    else {
+                    } else {
                         myLocationPersistentControl.setAttribute('data-state', 'disabled');
                         myLocationPersistentControl.classList.remove('selected');
                         my.persistent = false;
@@ -472,12 +650,13 @@ const app = (() => {
                                         position: {lat: parseFloat(lat), lng: parseFloat(lng)},
                                         map: app.map.ref,
                                         title: 'Locația mea',
+                                        optimized: true,
                                         icon: {
                                             url: `${cdn}pin/me.png`,
-                                            size: new google.maps.Size(28, 44),
+                                            size: new google.maps.Size(22, 35),
                                             origin: new google.maps.Point(0, 0),
-                                            anchor: new google.maps.Point(0, 22),
-                                            scaledSize: new google.maps.Size(28, 44)
+                                            anchor: new google.maps.Point(11, 35),
+                                            scaledSize: new google.maps.Size(22, 35)
                                         }
                                     });
 
@@ -493,7 +672,7 @@ const app = (() => {
                                     map.ref.panTo(new google.maps.LatLng(lat, lng));
                                 }
 
-                            }, () => {
+                            }, (err) => {
 
                                 try {
                                     // Clear marker
@@ -519,8 +698,10 @@ const app = (() => {
                                     // Reset any direction service query
                                     app.events.fire('clearDirectionService');
 
-                                    // Show warning...
-                                    throw 'Nu a putut fi determinată poziția. Verificați dacă browser-ul are permisiunea de a prelua locația.';
+                                    // Show warning that location coult not be determined
+                                    if (app.config.messages['location.error.unableToDetermine']) {
+                                        throw app.config.messages['location.error.unableToDetermine'];
+                                    }
 
                                 } catch (err) {
                                     notification(err, 'error', 10);
@@ -582,7 +763,6 @@ const app = (() => {
                         // Hide location and disable button
                         myLocationControl.setAttribute('data-state', 'hideLocation');
                         myLocationControl.classList.remove('selected');
-                        myLocationControl.setAttribute('disabled', 'disabled');
 
                         // Hide persistent location control
                         myLocationPersistentControl.classList.add('hide');
@@ -599,7 +779,7 @@ const app = (() => {
 
                 // Populate map controls
                 map.controls = {
-                    spinner: mapControls.querySelector('h3 .spinner'),
+                    spinner: mapControls.querySelector('h2 .spinner'),
 
                     // Mobility
                     publicTransportation: mapControls.querySelector('input[type=checkbox][name="toggle.mobility.publicTransportation"]'),
@@ -642,7 +822,7 @@ const app = (() => {
                                 dataSets[dataAttr.set].loaded = true;
 
                                 // DataSet has data
-                                if (dataSets[dataAttr.set].app.fetch()) {
+                                if (dataSets[dataAttr.set].app.getData()) {
                                     dataSets[dataAttr.set].hasData = true;
                                     dataSets[dataAttr.set].app.init();
                                 } else {
@@ -700,146 +880,24 @@ const app = (() => {
         });
 
         // Render map
-        events.add('renderMap', () => {
-            const mapDiv = document.querySelector('#map');
-            if (mapDiv) {
-
-                // Get dataset
-                const mapAttr = mapDiv.dataset;
-                if (mapAttr.bind) {
-                    // Decode URL
-                    const mapUrl = JSON.parse(atob(mapAttr.bind));
-
-                    // Load map
-                    load(mapUrl.url, () => {
-                        map.ref = new google.maps.Map(mapDiv, {
-                            center: map.mapCenter,
-                            zoom: 14,
-                            streetViewControl: false,
-                            mapTypeControl: false,
-                            fullscreenControl: false,
-                            styles: [
-                                {
-                                    "featureType": "administrative",
-                                    "elementType": "labels.text.fill",
-                                    "stylers": [
-                                        {
-                                            "color": "#444444"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "featureType": "landscape",
-                                    "elementType": "all",
-                                    "stylers": [
-                                        {
-                                            "color": "#f2f2f2"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "featureType": "poi",
-                                    "elementType": "all",
-                                    "stylers": [
-                                        {
-                                            "visibility": "on"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "featureType": "poi.business",
-                                    "elementType": "geometry.fill",
-                                    "stylers": [
-                                        {
-                                            "visibility": "off"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "featureType": "road",
-                                    "elementType": "all",
-                                    "stylers": [
-                                        {
-                                            "saturation": -100
-                                        },
-                                        {
-                                            "lightness": 45
-                                        }
-                                    ]
-                                },
-                                {
-                                    "featureType": "road.highway",
-                                    "elementType": "all",
-                                    "stylers": [
-                                        {
-                                            "visibility": "simplified"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "featureType": "road.arterial",
-                                    "elementType": "labels.icon",
-                                    "stylers": [
-                                        {
-                                            "visibility": "on"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "featureType": "transit",
-                                    "elementType": "all",
-                                    "stylers": [
-                                        {
-                                            "visibility": "on"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "featureType": "water",
-                                    "elementType": "all",
-                                    "stylers": [
-                                        {
-                                            "color": "#b4d4e1"
-                                        },
-                                        {
-                                            "visibility": "on"
-                                        }
-                                    ]
-                                }
-                            ]
-                        });
-
-                        google.maps.event.addListenerOnce(map.ref, 'tilesloaded', () => {
-
-                            // Mark map as loaded
-                            map.loaded = true;
-
-                            // Show map controls
-                            events.fire('mapRenderControls');
-                        });
-                    });
-                }
-            }
-        });
-
-        // Trigger map loading
-        events.fire('renderMap');
+        renderMap();
     }
 
     return {
 
-        /**
-         * App CDN.
-         */
+        // Application CDN
         cdn: cdn,
+
+        // Application configuration
+        config: configuration,
 
         // Observer
         events: events,
 
-        // Map
+        // Map configuration
         map: map,
 
-        // My location
+        // My location object configuration
         me: my,
 
         // DataSets
@@ -851,6 +909,9 @@ const app = (() => {
         // API call
         api: apiCall,
 
+        // Fetch API
+        fetch: getData,
+
         // Route path
         route: getRoutePath,
 
@@ -859,7 +920,6 @@ const app = (() => {
 
         // Render page
         render: render
-
     };
 
 })();
@@ -868,6 +928,31 @@ const app = (() => {
  * Initialize app.
  */
 (() => {
+
+    // Bind configuration
+    const page = document.querySelector('body.page');
+    const pageConfig = page.dataset;
+    if (pageConfig.bind) {
+        // Decode URL and store configuration
+        app.config = JSON.parse(atob(pageConfig.bind));
+    }
+
+    // Fetch configuration
+    // Perform API call
+    app.api('config.json')
+        .then((response) => {
+            if (!response.ok) {
+                return false;
+            }
+
+            return response.json();
+        })
+        .then((json) => {
+            // Decode URL and store configuration
+            app.config = Object.assign(app.config, json);
+        })
+        .catch(err => {
+        });
 
     app.render();
 
