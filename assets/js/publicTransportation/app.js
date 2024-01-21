@@ -90,7 +90,7 @@ const publicTransportation = (() => {
                 app.dataSets.publicTransportation.data.shapes = {};
 
                 // Parse results
-                json.forEach((route) => {
+                json.forEach((shape) => {
                     app.dataSets.publicTransportation.data.shapes[shape.shape_id] = {
                         lat: shape.shape_pt_lat,
                         long: shape.shape_pt_lon,
