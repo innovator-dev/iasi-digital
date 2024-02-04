@@ -261,8 +261,7 @@ const publicTransportation = (() => {
                     let vehicleRoute = app.dataSets.publicTransportation.data.routes[entry.route_id].name.trim(),
                         vehicleRouteLong = app.dataSets.publicTransportation.data.routes[entry.route_id].long.trim(),
                         vehicleType = app.dataSets.publicTransportation.data.routes[entry.route_id].type,
-                        vehicleTripHeadSign = app.dataSets.publicTransportation.data.trips[entry.trip_id].headSign.trim(),
-                        vehicleTripDirection = app.dataSets.publicTransportation.data.trips[entry.trip_id].direction;
+                        vehicleTripHeadSign = app.dataSets.publicTransportation.data.trips[entry.trip_id].headSign.trim();
 
                     if (app.dataSets.publicTransportation.markers[entry.label]) {
 
@@ -272,7 +271,8 @@ const publicTransportation = (() => {
                         app.dataSets.publicTransportation.markers[entry.label]['lastUpdate'] = entry.timestamp;
 
                         app.dataSets.publicTransportation.markers[entry.label]['popup'] =
-                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Direcție</strong>: ${vehicleTripHeadSign}</li><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`
+                            `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Direcție</strong>: ${vehicleTripHeadSign}</li><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul></main></div>`;
+
                     } else {
 
                         app.dataSets.publicTransportation.markers[entry.label] = {
@@ -318,6 +318,66 @@ const publicTransportation = (() => {
                                 app.map.ref,
                                 app.dataSets.publicTransportation.selectedMarker
                             );
+
+                            google.maps.event.addListener(app.map.popup, 'closeclick', () => {
+                                app.dataSets.publicTransportation.selectedMarker = null;
+                                app.map.popup = null;
+                            });
+
+                            /*
+                            google.maps.event.addListener(app.map.popup, 'domready', () => {
+                                const showETAButton = document.querySelector('.btn-render-eta');
+                                if (showETAButton) {
+                                    showETAButton.addEventListener('click', (e) => {
+
+                                        // Get parking place location
+                                        let vehicleLat = parseFloat(showETAButton.getAttribute('data-lat')) || 0,
+                                            vehicleLng = parseFloat(showETAButton.getAttribute('data-lng')) || 0;
+
+                                        // Validate if myLocation has data
+                                        try {
+
+                                            if (app.map.direction.service === null) {
+                                                app.events.fire('initiateDirectionService');
+                                            }
+
+                                            // Validate user location
+                                            if (app.me.location.lat === 0 || app.me.location.lng === 0 && app.config.messages['route.error.unableToDetermine']) {
+                                                app.notify(app.config.messages['route.error.unableToDetermine'], 'error', 10);
+                                            }
+
+                                            if (vehicleLat === 0 || vehicleLng === 0 && app.config.messages['parking.error.unableToDetermineLocation']) {
+                                                app.notify(app.config.messages['parking.error.unableToDetermineLocation'], 'error', 10);
+                                            }
+
+                                            app.map.direction.service.route({
+                                                origin: new google.maps.LatLng(app.me.location.lat, app.me.location.lng),
+                                                destination: new google.maps.LatLng(vehicleLat, vehicleLng),
+                                                travelMode: 'DRIVING'
+                                            }, function (res, status) {
+                                                if (status === 'OK') {
+                                                    console.log(res);
+
+                                                    // Fetch distance and time of arrival estimate
+                                                    if (res.routes[0].legs[0]) {
+
+                                                        let distance = res.routes[0].legs[0].distance.text;
+                                                        let duration = res.routes[0].legs[0].duration.text;
+
+                                                        // Show map box
+                                                        app.map.box.querySelector('h2').innerText = `Estimare timp locație`;
+                                                        app.map.box.querySelector('p').innerText = `Distanță până la locație: ${distance}`;
+                                                        app.map.box.classList.remove('hide');
+                                                    }
+                                                }
+                                            });
+                                        } catch (err) {
+                                            app.notify(err, 'error', 10);
+                                        }
+                                    });
+                                }
+                            });
+                             */
                         });
                     }
                 }
