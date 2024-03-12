@@ -250,7 +250,7 @@
   {
     "agency_id": 1,
     "route_id": 79,
-    "route_short_name": "3 e",
+    "route_short_name": "3e",
     "route_long_name": "3 e",
     "route_color": "#000",
     "route_type": 0
@@ -420,6 +420,22 @@
     "route_id": 110,
     "route_short_name": "802b",
     "route_long_name": "802b",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 121,
+    "route_short_name": "901",
+    "route_long_name": "901",
+    "route_color": "#000",
+    "route_type": 3
+  },
+  {
+    "agency_id": 1,
+    "route_id": 122,
+    "route_short_name": "902",
+    "route_long_name": "902",
     "route_color": "#000",
     "route_type": 3
   }
