@@ -74,6 +74,9 @@ const wasteCollection = (() => {
      */
     function init() {
 
+        // Marker deprecated on February 2024
+        const {AdvancedMarkerElement} = google.maps.importLibrary("marker");
+
         // Refresh data every 2 minutes
         setWatcher(120000, () => {
             getData();

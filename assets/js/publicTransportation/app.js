@@ -172,6 +172,9 @@ const publicTransportation = (() => {
      */
     function init() {
 
+        // Marker deprecated on February 2024
+        const {AdvancedMarkerElement} = google.maps.importLibrary("marker");
+
         // Fetch trips
         populateTrips();
 
