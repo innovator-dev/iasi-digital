@@ -409,6 +409,9 @@ const app = (() => {
 
                         // Show map controls
                         events.fire('mapRenderControls');
+
+                        // Load Advanced Marker Element, classic marker is deprecated from February 2024
+                        const {AdvancedMarkerElement} = google.maps.importLibrary("marker");
                     });
                 });
             }
@@ -422,9 +425,6 @@ const app = (() => {
      * Render page components.
      */
     function render() {
-
-        // Load Advanced Marker Element, classic marker is deprecated from February 2024
-        const {AdvancedMarkerElement} = google.maps.importLibrary("marker");
 
         // Initiate direction service
         events.add('initiateDirectionService', () => {
