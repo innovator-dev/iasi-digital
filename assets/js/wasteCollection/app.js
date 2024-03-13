@@ -74,6 +74,9 @@ const wasteCollection = (() => {
      */
     function init() {
 
+        // Load Advanced Marker Element, classic marker is deprecated from February 2024
+        const {AdvancedMarkerElement} = google.maps.importLibrary("marker");
+
         // Refresh data every 2 minutes
         setWatcher(120000, () => {
             getData();
@@ -146,7 +149,7 @@ const wasteCollection = (() => {
                         if (app.dataSets.wasteCollection.markers[entry.VehicleId]) {
 
                             app.dataSets.wasteCollection.markers[entry.VehicleId]['ref']
-                                .setCenter(new google.maps.LatLng(entry.LastLatitude, entry.LastLongitude));
+                                .position = {lat: entry.LastLatitude, lng: entry.LastLongitude};
 
                             app.dataSets.airQuality.markers[entry.VehicleId]['lastUpdate'] = entry.LastRecordDT;
 
@@ -154,20 +157,19 @@ const wasteCollection = (() => {
                                 `<div id="mapPopup"><header><h5>${entry.PlateNumber}</h5></header><main><ul><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li></ul></main></div>`;
                         } else {
 
+                            // Create icon
+                            let icon = document.createElement('img');
+                            icon.src = `${app.cdn}pin/waste-collection/vehicle.png`;
+                            icon.width = 22;
+                            icon.height = 35;
+
                             app.dataSets.wasteCollection.markers[entry.VehicleId] = {
                                 id: entry.VehicleId,
-                                ref: new google.maps.Marker({
+                                ref: new google.maps.marker.AdvancedMarkerElement({
                                     position: {lat: parseFloat(entry.LastLatitude), lng: parseFloat(entry.LastLongitude)},
                                     map: app.map.ref,
                                     title: entry.PlateNumber,
-                                    optimized: true,
-                                    icon: {
-                                        url: `${app.cdn}pin/waste-collection/vehicle.png`,
-                                        size: new google.maps.Size(22, 35),
-                                        origin: new google.maps.Point(0, 0),
-                                        anchor: new google.maps.Point(11, 35),
-                                        scaledSize: new google.maps.Size(22, 35)
-                                    }
+                                    content: icon
                                 }),
                                 lastUpdate: entry.LastRecordDT,
                                 visible: true,
