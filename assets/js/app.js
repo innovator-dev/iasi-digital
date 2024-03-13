@@ -385,109 +385,21 @@ const app = (() => {
      */
     function renderMap() {
 
-        // Render map
         events.add('renderMap', () => {
 
+            // Render map
             const mapDiv = document.querySelector('#map');
             if (mapDiv && app.config.map) {
-
                 // Load map
                 load(app.config.map, () => {
+
                     map.ref = new google.maps.Map(mapDiv, {
                         center: map.mapCenter,
                         zoom: 14,
                         streetViewControl: false,
                         mapTypeControl: false,
-                        fullscreenControl: false,
-                        styles: [
-                            {
-                                "featureType": "administrative",
-                                "elementType": "labels.text.fill",
-                                "stylers": [
-                                    {
-                                        "color": "#444444"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "landscape",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "color": "#f2f2f2"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "poi",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "visibility": "on"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "poi.business",
-                                "elementType": "geometry.fill",
-                                "stylers": [
-                                    {
-                                        "visibility": "off"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "road",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "saturation": -100
-                                    },
-                                    {
-                                        "lightness": 45
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "road.highway",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "visibility": "simplified"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "road.arterial",
-                                "elementType": "labels.icon",
-                                "stylers": [
-                                    {
-                                        "visibility": "on"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "transit",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "visibility": "on"
-                                    }
-                                ]
-                            },
-                            {
-                                "featureType": "water",
-                                "elementType": "all",
-                                "stylers": [
-                                    {
-                                        "color": "#b4d4e1"
-                                    },
-                                    {
-                                        "visibility": "on"
-                                    }
-                                ]
-                            }
-                        ]
+                        fullscreenControl: true,
+                        mapId: '4c67bc89ba82ae84'
                     });
 
                     google.maps.event.addListenerOnce(map.ref, 'tilesloaded', () => {
@@ -545,6 +457,20 @@ const app = (() => {
             }
 
             map.direction.loaded = false;
+        });
+
+        // Initiate show my location
+        events.add('showMyLocation', () => {
+
+            // Initiate direction service
+            events.fire('initiateDirectionService');
+        });
+
+        // Initiate hide my location
+        events.add('hideMyLocation', () => {
+
+            // Clear direction service
+            events.fire('clearDirectionService');
         });
 
         // Render map controls
@@ -631,8 +557,14 @@ const app = (() => {
                             // Show persistent location control
                             myLocationPersistentControl.classList.remove('hide');
 
-                            // Initiate direction service
-                            events.fire('initiateDirectionService');
+                            // Show my location
+                            events.fire('showMyLocation');
+
+                            // Create me location icon
+                            let icon = document.createElement('img');
+                            icon.src = `${cdn}pin/me.png`;
+                            icon.width = 22;
+                            icon.height = 35;
 
                             // Show my location
                             my.watcher = navigator.geolocation.watchPosition((position) => {
@@ -646,25 +578,18 @@ const app = (() => {
                                 my.location.lng = lng;
 
                                 if (my.app === null) {
-                                    my.app = new google.maps.Marker({
+                                    my.app = new google.maps.marker.AdvancedMarkerElement({
                                         position: {lat: parseFloat(lat), lng: parseFloat(lng)},
                                         map: app.map.ref,
                                         title: 'Locația mea',
-                                        optimized: true,
-                                        icon: {
-                                            url: `${cdn}pin/me.png`,
-                                            size: new google.maps.Size(22, 35),
-                                            origin: new google.maps.Point(0, 0),
-                                            anchor: new google.maps.Point(11, 35),
-                                            scaledSize: new google.maps.Size(22, 35)
-                                        }
+                                        content: icon
                                     });
 
                                     my.app.setMap(map.ref);
                                 }
 
                                 // Update position
-                                my.app.setPosition(new google.maps.LatLng(lat, lng));
+                                my.app.position = {lat: lat, lng: lng};
                                 my.lastUpdate = new Date().getTime();
                                 my.visible = true;
 
@@ -695,10 +620,10 @@ const app = (() => {
                                     my.location.lat = 0;
                                     my.location.lng = 0;
 
-                                    // Reset any direction service query
-                                    app.events.fire('clearDirectionService');
+                                    // Hide my location
+                                    events.fire('hideMyLocation');
 
-                                    // Show warning that location coult not be determined
+                                    // Show warning that location could not be determined
                                     if (app.config.messages['location.error.unableToDetermine']) {
                                         notification(app.config.messages['location.error.unableToDetermine'], 'error', 10);
                                     }
@@ -754,8 +679,8 @@ const app = (() => {
                             my.location.lat = 0;
                             my.location.lng = 0;
 
-                            // Reset any direction service query
-                            app.events.fire('clearDirectionService');
+                            // Hide my location
+                            events.fire('hideMyLocation');
                         }
 
                     } else {
