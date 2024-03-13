@@ -105,9 +105,6 @@ const publicParking = (() => {
      */
     function init() {
 
-        // Marker deprecated on February 2024
-        const {AdvancedMarkerElement} = google.maps.importLibrary("marker");
-
         // Refresh data every 3 minutes
         setWatcher(180000, () => {
             getData();

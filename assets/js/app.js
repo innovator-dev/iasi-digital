@@ -423,6 +423,9 @@ const app = (() => {
      */
     function render() {
 
+        // Load Advanced Marker Element, classic marker is deprecated from February 2024
+        const {AdvancedMarkerElement} = google.maps.importLibrary("marker");
+
         // Initiate direction service
         events.add('initiateDirectionService', () => {
             if (map.loaded) {
