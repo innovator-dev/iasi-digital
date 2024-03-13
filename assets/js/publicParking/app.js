@@ -174,23 +174,22 @@ const publicParking = (() => {
             // Render parking places
             app.dataSets.publicParking.data.places.forEach((entry) => {
 
+                // Create icon
+                let icon = document.createElement('img');
+                icon.src = `${app.cdn}pin/public-parking/${entry.stare}.png`;
+                icon.width = 22;
+                icon.height = 35;
+
                 if (app.dataSets.publicParking.markers[entry.sensorId] === undefined) {
                     app.dataSets.publicParking.markers[entry.sensorId] = {
                         id: entry.sensorId,
                         parking: entry.parkingId,
                         state: entry.stare,
-                        ref: new google.maps.Marker({
+                        ref: new google.maps.marker.AdvancedMarkerElement({
                             position: {lat: parseFloat(entry.latitude), lng: parseFloat(entry.longitude)},
                             map: app.map.ref,
                             title: entry.numar.toString(),
-                            optimized: true,
-                            icon: {
-                                url: `${app.cdn}pin/public-parking/${entry.stare}.png`,
-                                size: new google.maps.Size(22, 35),
-                                origin: new google.maps.Point(0, 0),
-                                anchor: new google.maps.Point(11, 35),
-                                scaledSize: new google.maps.Size(22, 35)
-                            }
+                            content: icon
                         }),
                         lastUpdate: Date.now(),
                         visible: true,
