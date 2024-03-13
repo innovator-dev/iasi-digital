@@ -285,7 +285,7 @@ const publicTransportation = (() => {
                             `<div id="mapPopup"><header>${vehicleRoute !== null ? `<span class="map-label route route-${vehicleRoute} ic-mr-10">${vehicleRoute}</span>` : ''}<h5>${vehicleRouteLong}</h5></header><main><ul><li><strong>Direcție</strong>: ${vehicleTripHeadSign}</li><li><strong>Ultima actualizare</strong>: acum ${timeSinceLastUpdate} minute</li><li><strong>Cod identificare</strong>: ${entry.label}</li><li><strong>Viteză</strong>: ${entry.speed} km/h</li></ul><nav><button class="btn btn-render-eta" data-lat="${parseFloat(entry.latitude)}" data-lng="${parseFloat(entry.longitude)}" data-route="${vehicleTripHeadSign}" data-route-id="${vehicleRoute}">Afișează estimare <span data-icon="&#xe018;" class="ic-ml-5"></span></button></nav></main></div>`;
 
                         // Update route details (if selectedMarker)
-                        if (app.dataSets.publicTransportation.selectedMarker.label === entry.label) {
+                        if (app.dataSets.publicTransportation.selectedMarker.label && app.dataSets.publicTransportation.selectedMarker.label === entry.label) {
 
                             // Validate if myLocation has data
                             try {
@@ -503,6 +503,9 @@ const publicTransportation = (() => {
 
         // Hide map controls
         document.querySelector('.mapControlsVehicle').classList.add('hide');
+
+        // Clear selected marker
+        app.dataSets.publicTransportation.selectedMarker = null;
     }
 
     /**
