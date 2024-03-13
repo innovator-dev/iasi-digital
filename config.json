@@ -1,7 +1,7 @@
 {
   "messages": {
     "apiCall.error.missingUrl": "Eroare preluare date.",
-    "location.error.unableToDetermine": "Locația nu a putut fi determinată. Te rugăm să verifici dacă localizarea este activată în browser.",
+    "location.error.unableToDetermine": "Locația nu a putut fi determinată. Te rugăm să verifici dacă setarea de localizare este activată în browser.",
     "route.error.unableToDetermine": "Traseul nu a putut fi afișat, eroare determinare locație. Activează mecanismul de localizare apăsând pe butonul din drepta jos al hărții.",
     "parking.error.unableToDetermineLocation": "Locația locului de parcare nu a putut fi determinată.",
     "airQuality.title.healthy": "Sănătos",
