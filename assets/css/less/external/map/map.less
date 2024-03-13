@@ -81,115 +81,6 @@
     span.vehicle-type {
       font-size: 1em;
     }
-
-    // Label
-    .label {
-      display: inline-block;
-      font-weight: 400;
-      border-radius: .25em;
-    }
-
-    // Route number label
-    span.route {
-      color: var(--text-color-white);
-
-      padding: 4px 8px;
-      background-color: var(--route);
-
-      &.route-1 {
-        background-color: var(--route-1);
-      }
-
-      &.route-3 {
-        background-color: var(--route-3);
-      }
-
-      &.route-5 {
-        background-color: var(--route-5);
-      }
-
-      &.route-6 {
-        background-color: var(--route-6);
-        color: var(--text-color);
-      }
-
-      &.route-7 {
-        background-color: var(--route-7);
-      }
-
-      &.route-8 {
-        background-color: var(--route-8);
-        color: var(--text-color);
-      }
-
-      &.route-9 {
-        background-color: var(--route-9);
-      }
-
-      &.route-11 {
-        background-color: var(--route-11);
-      }
-
-      &.route-13 {
-        background-color: var(--route-13);
-      }
-    }
-
-    // AQI colors
-    span.aqi {
-      display: inline-block;
-
-      font-weight: 400;
-      border-radius: .25em;
-      color: var(--text-color-white);
-
-      padding: 4px 8px;
-
-      &.aqi-good {
-        background-color: var(--aqi-good);
-      }
-
-      &.aqi-moderate {
-        background-color: var(--aqi-moderate);
-        color: var(--text-color);
-      }
-
-      &.aqi-unhealthy-sensitive {
-        background-color: var(--aqi-unhealthy-sensitive);
-      }
-
-      &.aqi-unhealthy {
-        background-color: var(--aqi-unhealthy);
-      }
-
-      &.aqi-very-unhealthy {
-        background-color: var(--aqi-very-unhealthy);
-      }
-
-      &.aqi-hazardous {
-        background-color: var(--aqi-hazardous);
-      }
-    }
-
-    // Parking places
-    span.parking {
-      color: var(--text-color-white);
-
-      padding: 4px 8px;
-      background-color: var(--route);
-
-      &.parking-1 {
-        background-color: var(--parking-available);
-      }
-
-      &.parking-2 {
-        background-color: var(--parking-occupied);
-      }
-
-      &.parking-3 {
-        background-color: var(--parking-reserved);
-      }
-    }
   }
 
   & > main {
@@ -206,7 +97,7 @@
     // Navigation
     nav {
       display: flex;
-      flex-flow: column nowrap;
+      flex-flow: row nowrap;
       justify-content: space-around;
       align-items: center;
       margin: 1em auto 0;
@@ -245,9 +136,9 @@
 
   @media (min-width: @mediaQueryMedium) {
     position: absolute;
-    right: 10px;
+    left: 10px;
     top: 10px;
-    width: 30%;
+    width: 35%;
 
     padding: 15px;
     border-radius: .25em;
@@ -261,11 +152,11 @@
   }
 
   @media (min-width: @mediaQueryLarge) {
-    width: 25%;
+    width: 30%;
   }
 
   @media (min-width: @mediaQueryExtraLarge) {
-    width: 20%;
+    width: 16%;
   }
 
   // Control options
@@ -297,6 +188,53 @@
       height: 22px;
 
       border-width: 1px;
+    }
+  }
+}
+
+.mapControlsVehicle {
+  top: 250px;
+
+  & > header {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-around;
+
+    padding: 0;
+    margin: 0 0 1em;
+
+    @media (min-width: @mediaQueryMedium) {
+      justify-content: space-between;
+    }
+
+    & > p {
+      font-size: .9em;
+    }
+  }
+
+  & > main {
+
+    & > ul {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      justify-content: space-between;
+
+      li {
+        font-size: .9em;
+        margin: 0;
+
+        &:nth-child(1) {
+          margin: 0;
+        }
+
+        & > span {
+          display: block;
+          font-size: 1.4em;
+          margin: -.25em auto 0;
+        }
+      }
     }
   }
 }
@@ -365,5 +303,114 @@
   & > h2 {
     font-size: 1.15em;
     margin: 0 0 .5em;
+  }
+}
+
+// Map label
+.map-label {
+  display: inline-block;
+  font-weight: 400;
+  border-radius: .25em;
+}
+
+// Route number label
+span.route {
+  color: var(--text-color-white);
+
+  padding: 4px 8px;
+  background-color: var(--route);
+
+  &.route-1 {
+    background-color: var(--route-1);
+  }
+
+  &.route-3 {
+    background-color: var(--route-3);
+  }
+
+  &.route-5 {
+    background-color: var(--route-5);
+  }
+
+  &.route-6 {
+    background-color: var(--route-6);
+    color: var(--text-color);
+  }
+
+  &.route-7 {
+    background-color: var(--route-7);
+  }
+
+  &.route-8 {
+    background-color: var(--route-8);
+    color: var(--text-color);
+  }
+
+  &.route-9 {
+    background-color: var(--route-9);
+  }
+
+  &.route-11 {
+    background-color: var(--route-11);
+  }
+
+  &.route-13 {
+    background-color: var(--route-13);
+  }
+}
+
+// AQI colors
+span.aqi {
+  display: inline-block;
+
+  font-weight: 400;
+  border-radius: .25em;
+  color: var(--text-color-white);
+
+  padding: 4px 8px;
+
+  &.aqi-good {
+    background-color: var(--aqi-good);
+  }
+
+  &.aqi-moderate {
+    background-color: var(--aqi-moderate);
+    color: var(--text-color);
+  }
+
+  &.aqi-unhealthy-sensitive {
+    background-color: var(--aqi-unhealthy-sensitive);
+  }
+
+  &.aqi-unhealthy {
+    background-color: var(--aqi-unhealthy);
+  }
+
+  &.aqi-very-unhealthy {
+    background-color: var(--aqi-very-unhealthy);
+  }
+
+  &.aqi-hazardous {
+    background-color: var(--aqi-hazardous);
+  }
+}
+
+// Parking places
+span.parking {
+  color: var(--text-color-white);
+
+  padding: 4px 8px;
+  background-color: var(--route);
+
+  &.parking-1 {
+    background-color: var(--parking-available);
+  }
+
+  &.parking-2 {
+    background-color: var(--parking-occupied);
+  }
+
+  &.parking-3 {
+    background-color: var(--parking-reserved);
   }
 }
