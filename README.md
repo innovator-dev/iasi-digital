@@ -1,5 +1,5 @@
 ## Iași Digital
-A data driven perspective over [Iași, Romania][1] by integrating open data sets through [Iași Open Data Portal][2].
+A data driven perspective over [Iași, Romania][1], integrating open data sets through [Iași Open Data Portal][2].
 
 ### Available data sets:
 * Public transportation
