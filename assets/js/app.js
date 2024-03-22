@@ -90,7 +90,7 @@ const app = (() => {
 
     /**
      * Map rendering.
-     * @type {{loaded: boolean, ref: null, popup: null, controls: {}, mapCenter: {lng: number, lat: number}}}
+     * @type {{loaded: boolean, ref: null, popup: null, controls: {}, mapCenter: {lng: number, lat: number}, direction: {loaded: boolean, renderer: null, service: null}}}
      */
     const map = {
         // Map configuration
@@ -111,8 +111,8 @@ const app = (() => {
     };
 
     /**
-     * My Location.
-     * @type {{app: null, watcher: null, visible: boolean, updated: null}}
+     * My location.
+     * @type {{app: null, watcher: null, visible: boolean, location: {lng: number, lat: number}, persistent: boolean, updated: null}}
      */
     const my = {
         app: null,
@@ -345,7 +345,6 @@ const app = (() => {
      *  callback: (Optional) Callback method
      */
     function getData(args) {
-
         try {
 
             // Validate arguments
@@ -384,7 +383,6 @@ const app = (() => {
      * Render Google Maps.
      */
     function renderMap() {
-
         events.add('renderMap', () => {
 
             // Render map
@@ -411,7 +409,7 @@ const app = (() => {
                         events.fire('mapRenderControls');
 
                         // Load Advanced Marker Element, classic marker is deprecated from February 2024
-                        const {AdvancedMarkerElement} = google.maps.importLibrary("marker");
+                        const {AdvancedMarkerElement, PinElement} = google.maps.importLibrary("marker");
                     });
                 });
             }
@@ -474,6 +472,26 @@ const app = (() => {
 
             // Clear direction service
             events.fire('clearDirectionService');
+
+            // Clear marker
+            if (my.app !== null) {
+                my.app.setMap(null);
+                my.app = null;
+            }
+
+            // Clear watch
+            if (my.watcher !== null) {
+                navigator.geolocation.clearWatch(my.watcher);
+                my.watcher = null;
+            }
+
+            // Clear data
+            my.updated = null;
+            my.visible = false;
+
+            // Reset my location
+            my.location.lat = 0;
+            my.location.lng = 0;
         });
 
         // Render map controls
@@ -563,12 +581,6 @@ const app = (() => {
                             // Show my location
                             events.fire('showMyLocation');
 
-                            // Create me location icon
-                            let icon = document.createElement('img');
-                            icon.src = `${cdn}pin/me.png`;
-                            icon.width = 22;
-                            icon.height = 35;
-
                             // Show my location
                             my.watcher = navigator.geolocation.watchPosition((position) => {
 
@@ -580,12 +592,19 @@ const app = (() => {
                                 my.location.lat = lat;
                                 my.location.lng = lng;
 
+                                // Custom marker
+                                const pin = new google.maps.marker.PinElement({
+                                    glyphColor: '#fff',
+                                    background: '#31496d',
+                                    borderColor: '#31496d'
+                                });
+
                                 if (my.app === null) {
                                     my.app = new google.maps.marker.AdvancedMarkerElement({
                                         position: {lat: parseFloat(lat), lng: parseFloat(lng)},
                                         map: app.map.ref,
                                         title: 'Locația mea',
-                                        content: icon
+                                        content: pin.element
                                     });
 
                                     my.app.setMap(map.ref);
@@ -593,7 +612,7 @@ const app = (() => {
 
                                 // Update position
                                 my.app.position = {lat: lat, lng: lng};
-                                my.lastUpdate = new Date().getTime();
+                                my.updated = new Date().getTime();
                                 my.visible = true;
 
                                 if (my.persistent === true) {
@@ -603,32 +622,13 @@ const app = (() => {
                             }, () => {
 
                                 try {
-                                    // Clear marker
-                                    if (my.app !== null) {
-                                        my.app.setMap(null);
-                                        my.app = null;
-                                    }
-
-                                    // Clear watch
-                                    if (my.watcher !== null) {
-                                        navigator.geolocation.clearWatch(my.watcher);
-                                        my.watcher = null;
-                                    }
-
-                                    // Clear data
-                                    my.lastUpdate = null;
-                                    my.visible = false;
-
-                                    // Reset my location
-                                    my.location.lat = 0;
-                                    my.location.lng = 0;
 
                                     // Hide my location
                                     events.fire('hideMyLocation');
 
                                     // Show warning that location could not be determined
                                     if (app.config.messages['location.error.unableToDetermine']) {
-                                        notification(app.config.messages['location.error.unableToDetermine'], 'error', 10);
+                                        notification(app.config.messages['location.error.unableToDetermine'], 'info', 10);
                                     }
 
                                 } catch (err) {
@@ -660,27 +660,6 @@ const app = (() => {
 
                             // Disable persistent flag
                             my.persistent = false;
-
-                            // Hide my location
-                            // Clear marker
-                            if (my.app !== null) {
-                                my.app.setMap(null);
-                                my.app = null;
-                            }
-
-                            // Clear watch
-                            if (my.watcher !== null) {
-                                navigator.geolocation.clearWatch(my.watcher);
-                                my.watcher = null;
-                            }
-
-                            // Clear data
-                            my.lastUpdate = null;
-                            my.visible = false;
-
-                            // Reset my location
-                            my.location.lat = 0;
-                            my.location.lng = 0;
 
                             // Hide my location
                             events.fire('hideMyLocation');
@@ -730,6 +709,10 @@ const app = (() => {
                     const dataAttr = toggle.dataset;
                     if (dataAttr.set) {
 
+                        /**
+                         * DataSet schema.
+                         * @type {{app: null, watcher: null, loaded: boolean, visible: boolean, data: {}, hasData: boolean, selectedMarker: null, markers: *[], updated: null}}
+                         */
                         dataSets[dataAttr.set] = {
                             app: null,
                             watcher: null,
@@ -836,6 +819,9 @@ const app = (() => {
 
         // API call
         api: apiCall,
+
+        // Load external library
+        inc: load,
 
         // Fetch API
         fetch: getData,
