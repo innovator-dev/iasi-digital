@@ -722,7 +722,8 @@ const app = (() => {
                             updated: null,
                             data: {},
                             markers: [],
-                            selectedMarker: null
+                            selectedMarker: null,
+                            args: {}
                         };
 
                         // Load dataSet app
