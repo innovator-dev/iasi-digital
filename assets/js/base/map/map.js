@@ -6,7 +6,7 @@
  * @link https://iasi.digital
  * @link https://oras.digital
  *
- * @copyright (c) 2024. Iasi Digital [https://iasi.digital]
+ * @copyright (c) 2018-2025. Iasi Digital [https://iasi.digital]
  */
 
 'use strict';
@@ -83,6 +83,9 @@ class CityApp {
      */
     static initialize() {
 
+        // Events container
+        this.events = new Observer();
+
         // Bind configuration
         this.config = {};
         this.bindConfig();
@@ -97,7 +100,7 @@ class CityApp {
                     lat: 47.1553424,
                     lng: 27.585645
                 },
-                loaded: false,
+                isLoaded: false,
                 popup: null,
 
                 // Map controls
@@ -105,18 +108,31 @@ class CityApp {
 
                 // Direction service
                 direction: {
-                    loaded: false,
+                    isLoaded: false,
                     service: null,
                     renderer: null
                 }
             },
 
             // DataSets
-            dataSets: {}
+            dataSets: {},
+
+            // User
+            user: {
+                _ref: null,
+                watcher: null,
+                isLoaded: false,
+                updated: null,
+                location: {
+                    lat: 0,
+                    lng: 0
+                },
+                isPersistent: false
+            }
         };
 
         // Load map
-        this.renderMap();
+        this.loadMap();
     }
 
     /**
@@ -357,7 +373,21 @@ class CityApp {
     }
 
     /**
-     * Load Google Map JS and render
+     * Initiate Google Maps loading.
+     */
+    static loadMap() {
+
+        // Container
+        const container = document.querySelector('#map');
+        if (container && this.config.map) {
+
+            // Load map
+            this.load(this.config.map);
+        }
+    }
+
+    /**
+     * Render Google Map JS and render
      */
     static renderMap() {
 
@@ -365,28 +395,28 @@ class CityApp {
         const container = document.querySelector('#map');
         if (container && this.config.map) {
 
-            // Load map
-            this.load(this.config.map, () => {
-                this.data.map._ref = new google.maps.Map(container, {
-                    center: this.data.map.center,
-                    zoom: 14,
-                    streetViewControl: false,
-                    mapTypeControl: false,
-                    fullscreenControl: true,
-                    mapId: '4c67bc89ba82ae84'
-                });
+            this.data.map._ref = new google.maps.Map(container, {
+                center: this.data.map.center,
+                zoom: 14,
+                streetViewControl: false,
+                mapTypeControl: false,
+                fullscreenControl: true,
+                mapId: '4c67bc89ba82ae84'
+            });
 
-                google.maps.event.addListenerOnce(this.data.map._ref, 'tilesloaded', () => {
+            google.maps.event.addListenerOnce(this.data.map._ref, 'tilesloaded', () => {
 
-                    // Mark map as loaded
-                    this.data.map.loaded = true;
+                // Mark map as loaded
+                this.data.map.isLoaded = true;
 
-                    // Load Advanced Marker Element, classic marker is deprecated from February 2024
-                    const {AdvancedMarkerElement, PinElement} = google.maps.importLibrary("marker");
+                // Load Advanced Marker Element, classic marker is deprecated from February 2024
+                const {AdvancedMarkerElement, PinElement} = google.maps.importLibrary('marker');
 
-                    // Load map controls
-                    this.renderMapControls();
-                });
+                // Load spherical namespace, methods to calculate distances
+                // const {spherical} = google.maps.importLibrary('geometry');
+
+                // Load map controls
+                this.renderMapControls();
             });
         }
     }
@@ -396,9 +426,40 @@ class CityApp {
      */
     static renderMapControls() {
 
+        // Hide my location
+        this.events.add('hideMyLocation', () => {
+
+            // Reset user position on the map
+            if (this.data.user._ref !== null) {
+                this.data.user._ref.setMap(null);
+                this.data.user._ref = null;
+            }
+
+            // Clear user watcher
+            if (this.data.user.watcher !== null) {
+                navigator.geolocation.clearWatch(this.data.user.watcher);
+                this.data.user.watcher = null;
+            }
+
+            // Clear user data
+            this.data.user.updated = null;
+            this.data.user.isLoaded = false;
+            this.data.user.isPersistent = false;
+
+            // Reset coordinates
+            this.data.user.location.lat = 0;
+            this.data.user.location.lng = 0;
+        });
+
+        // Show my location
+        this.events.add('showMyLocation', () => {
+
+
+        });
+
         // Controls container
         const mapControls = document.querySelector('.mapControls');
-        if (mapControls && this.data.map.loaded) {
+        if (mapControls && this.data.map.isLoaded) {
 
             // Create center map control
             const centerMapControlContainer = document.createElement('div');
@@ -431,6 +492,167 @@ class CityApp {
 
             // Position custom button
             this.data.map._ref.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(centerMapControlContainer);
+
+            // Create my location map control
+            const myLocationMapControlContainer = document.createElement('div');
+            myLocationMapControlContainer.classList.add('mapControlsContainer');
+
+            const myLocationMapControl = document.createElement('button');
+            myLocationMapControl.setAttribute('data-state', 'hideLocation');
+            myLocationMapControl.classList.add('mapCustomControl', 'separator');
+            myLocationMapControl.innerHTML = `<span data-icon="&#xe018;"></span>`;
+            myLocationMapControl.title = this.config.labels.showMyLocation;
+            myLocationMapControl.type = 'button';
+
+            const myLocationMapPersistentControl = document.createElement('button');
+            myLocationMapPersistentControl.setAttribute('data-state', 'hidePersistent');
+            myLocationMapPersistentControl.classList.add('mapCustomControl', 'separator', 'hide');
+            myLocationMapPersistentControl.innerHTML = `<span data-icon="&#xe015;"></span>`;
+            myLocationMapPersistentControl.title = this.config.labels.showMyLocationPersistent;
+            myLocationMapPersistentControl.type = 'button';
+
+            myLocationMapPersistentControl.addEventListener('click', (e) => {
+
+                if (myLocationMapPersistentControl.getAttribute('data-state') === 'hidePersistent') {
+                    myLocationMapPersistentControl.setAttribute('data-state', 'showPersistent');
+                    myLocationMapPersistentControl.classList.add('selected');
+
+                    // Mark as persistent
+                    this.data.user.isPersistent = true;
+                } else {
+                    myLocationMapPersistentControl.setAttribute('data-state', 'hidePersistent');
+                    myLocationMapPersistentControl.classList.remove('selected');
+
+                    // Mark as persistent
+                    this.data.user.isPersistent = false;
+                }
+            });
+
+            myLocationMapControl.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Check if geoLocation is available
+                if (navigator.geolocation) {
+
+                    // Location hidden, show location
+                    if (myLocationMapControl.getAttribute('data-state') === 'hideLocation') {
+                        myLocationMapControl.setAttribute('data-state', 'showLocation');
+                        myLocationMapControl.classList.add('selected');
+
+                        // Show my location real time
+                        myLocationMapPersistentControl.classList.remove('hide');
+
+                        // Show my location
+                        this.data.user.watcher = navigator.geolocation.watchPosition((position) => {
+
+                            // Get coordinates
+                            this.data.user.location.lat = position.coords.latitude;
+                            this.data.user.location.lng = position.coords.longitude;
+
+                            // Show pin
+                            const pin = new google.maps.marker.PinElement({
+                                glyphColor: '#fff',
+                                background: '#31496d',
+                                borderColor: '#31496d'
+                            });
+
+                            if (this.data.user._ref === null) {
+                                this.data.user._ref = new google.maps.marker.AdvancedMarkerElement({
+                                    position: {lat: parseFloat(this.data.user.location.lat), lng: parseFloat(this.data.user.location.lng)},
+                                    map: this.data.map._ref,
+                                    title: this.config.labels.myLocation,
+                                    content: pin.element
+                                });
+
+                                this.data.user._ref.setMap(this.data.map._ref);
+                            }
+
+                            // Update metadata
+                            this.data.user.updated = new Date().getTime();
+                            this.data.user.isLoaded = true;
+
+                            // Center to user
+                            if (this.data.user.isPersistent) {
+                                this.data.map._ref.panTo({
+                                    lat: parseFloat(this.data.user.location.lat),
+                                    lng: parseFloat(this.data.user.location.lng)
+                                });
+
+                                this.data.user._ref.setMap(this.data.map._ref);
+                            }
+
+                        }, () => {
+
+                            try {
+
+                                // Hide my location
+                                this.events.fire('hideMyLocation');
+
+                                // Show warning that location could not be determined
+                                if (app.config.messages['location.error.unableToDetermine']) {
+                                    this.notification(app.config.messages['location.error.unableToDetermine'], 'info', 10);
+                                }
+                            }
+                            catch (e) {
+
+                                this.notification(e, 'error', 10);
+
+                                // Hide persistent location
+                                myLocationMapPersistentControl.setAttribute('data-state', 'hidePersistent');
+                                myLocationMapPersistentControl.setAttribute('disabled', 'disabled');
+                                myLocationMapPersistentControl.classList.remove('selected');
+                                myLocationMapPersistentControl.classList.add('hide');
+
+                                myLocationMapControl.setAttribute('data-state', 'hideLocation');
+                                myLocationMapControl.setAttribute('disabled', 'disabled');
+                                myLocationMapControl.classList.remove('selected');
+
+                                // Disable persistent flag
+                                this.data.user.isPersistent = false;
+                            }
+
+                        }, {enableHighAccuracy: true, timeout: 5000});
+
+                    } else {
+
+                        // ShowLocation state
+                        myLocationMapControl.setAttribute('data-state', 'hideLocation');
+                        myLocationMapControl.classList.remove('selected');
+
+                        // Hide my location real time
+                        myLocationMapPersistentControl.setAttribute('data-state', 'hidePersistent');
+                        myLocationMapPersistentControl.classList.remove('selected');
+                        myLocationMapPersistentControl.classList.add('hide');
+
+                        // Trigger
+                        this.events.fire('hideMyLocation');
+                    }
+
+                } else {
+
+                    // Hide persistent location
+                    myLocationMapPersistentControl.setAttribute('data-state', 'hidePersistent');
+                    myLocationMapPersistentControl.setAttribute('disabled', 'disabled');
+                    myLocationMapPersistentControl.classList.remove('selected');
+                    myLocationMapPersistentControl.classList.add('hide');
+
+                    // GeoLocation not available
+                    myLocationMapControl.setAttribute('data-state', 'hideLocation');
+                    myLocationMapControl.setAttribute('disabled', 'disabled');
+                    myLocationMapControl.classList.remove('selected');
+
+                    // Trigger
+                    this.events.fire('hideMyLocation');
+                }
+            });
+
+            // Append to container
+            myLocationMapControlContainer.appendChild(myLocationMapPersistentControl);
+            myLocationMapControlContainer.appendChild(myLocationMapControl);
+
+            // Position custom button
+            this.data.map._ref.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(myLocationMapControlContainer);
 
             // Populate map controls
             this.data.map.controls = {
@@ -467,11 +689,12 @@ class CityApp {
                         app: {
                             _ref: null,
                             watcher: null,
-                            loaded: false,
-                            visible: false
+                            isLoaded: false,
+                            isVisible: false
                         },
 
                         // Data
+                        hasData: false,
                         data: {},
                         dataUpdated: null,
 
@@ -481,6 +704,11 @@ class CityApp {
 
                         // Additional properties
                         props: {},
+
+                        // Metrics
+                        metrics: {
+                            visible: 0
+                        },
 
                         /**
                          * Query dataSet API and get data.
@@ -528,12 +756,37 @@ class CityApp {
                         }
                     };
 
+                    // Traffic layer
+                    if (dataAttr.set === 'trafficLayer') {
+
+                        // Enable
+                        toggle.addEventListener('click', () => {
+                            this.data.map.controls.spinner.classList.remove('hide');
+
+                            // Get input state
+                            const toggleChecked = this.data.map.controls[dataAttr.set].checked;
+                            if (toggleChecked) {
+                                // Show traffic layer
+                                this.data.dataSets[dataAttr.set].app._ref = new google.maps.TrafficLayer();
+                                this.data.dataSets[dataAttr.set].app._ref.setMap(this.data.map._ref);
+                                this.data.dataSets[dataAttr.set].visible = true;
+                            } else {
+                                // Hide traffic layer
+                                this.data.dataSets[dataAttr.set].visible = false;
+                                this.data.dataSets[dataAttr.set].app._ref.setMap(null);
+                                this.data.dataSets[dataAttr.set].app._ref = null;
+                            }
+
+                            this.data.map.controls.spinner.classList.add('hide');
+                        });
+                    }
+
                     // Load dataSet app
-                    if (dataAttr.source) {
+                    else if (dataAttr.source) {
                         this.load(dataAttr.source, () => {
 
                             // Mark dataSet as loaded
-                            this.data.dataSets[dataAttr.set].app.loaded = true;
+                            this.data.dataSets[dataAttr.set].app.isLoaded = true;
 
                             // DataSet has data
                             if (this.data.dataSets[dataAttr.set].app._ref.getData()) {
@@ -562,31 +815,6 @@ class CityApp {
                             this.data.map.controls.spinner.classList.add('hide');
                         });
                     }
-
-                    // Traffic layer
-                    if (dataAttr.set === 'trafficLayer') {
-
-                        // Enable
-                        toggle.addEventListener('click', () => {
-                            this.data.map.controls.spinner.classList.remove('hide');
-
-                            // Get input state
-                            const toggleChecked = this.data.map.controls[dataAttr.set].checked;
-                            if (toggleChecked) {
-                                // Show traffic layer
-                                this.data.dataSets[dataAttr.set].app._ref = new google.maps.TrafficLayer();
-                                this.data.dataSets[dataAttr.set].app._ref.setMap(this.data.map._ref);
-                                this.data.dataSets[dataAttr.set].visible = true;
-                            } else {
-                                // Hide traffic layer
-                                this.data.dataSets[dataAttr.set].visible = false;
-                                this.data.dataSets[dataAttr.set].app._ref.setMap(null);
-                                this.data.dataSets[dataAttr.set].app._ref = null;
-                            }
-
-                            this.data.map.controls.spinner.classList.add('hide');
-                        });
-                    }
                 }
             });
         }
@@ -601,6 +829,5 @@ class CityApp {
     // Initialize app
     CityApp.initialize();
     window.CityApp = CityApp;
-
 
 })();
