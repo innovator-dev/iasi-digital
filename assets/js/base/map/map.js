@@ -361,7 +361,7 @@ class CityApp {
                         props.callback(json);
                     }
                 })
-                .catch(err => {
+                .catch(() => {
                     return false;
                 });
 
@@ -511,7 +511,7 @@ class CityApp {
             myLocationMapPersistentControl.title = this.config.labels.showMyLocationPersistent;
             myLocationMapPersistentControl.type = 'button';
 
-            myLocationMapPersistentControl.addEventListener('click', (e) => {
+            myLocationMapPersistentControl.addEventListener('click', () => {
 
                 if (myLocationMapPersistentControl.getAttribute('data-state') === 'hidePersistent') {
                     myLocationMapPersistentControl.setAttribute('data-state', 'showPersistent');
