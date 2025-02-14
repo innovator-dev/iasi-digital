@@ -11,6 +11,10 @@
 
 'use strict';
 
+/**
+ * Public Parking application.
+ * Consuming OpenData Iași Portal.
+ */
 class PublicParking extends DataSet {
 
     /**
