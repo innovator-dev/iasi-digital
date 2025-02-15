@@ -98,7 +98,7 @@ class WasteCollection extends DataSet {
                     if (this.markers[vehicle.id]) {
 
                         // Update vehicle position
-                        this.markers[vehicle.id]._ref.position = {lat: parseFloat(entry.latitude), lng: parseFloat(entry.longitude)};
+                        this.markers[vehicle.id]._ref.position = {lat: parseFloat(vehicle.latitude), lng: parseFloat(vehicle.longitude)};
 
                         // Show marker if hidden
                         if (!this.markers[vehicle.id].isVisible && this.markers[vehicle.id]._ref) {
