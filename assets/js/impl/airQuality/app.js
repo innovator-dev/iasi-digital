@@ -136,11 +136,6 @@ class AirQuality extends DataSet {
     static dataSet = 'cf3f-2309-44d1-8e0c-1137';
 
     /**
-     * Selected marker.
-     */
-    static selectedMarker = null;
-
-    /**
      * Initialize app.
      */
     init() {
