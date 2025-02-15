@@ -1,8 +1,8 @@
 {
   "messages": {
-    "apiCall.error.missingUrl": "Eroare preluare date.",
+    "apiCall.error.missingUrl": "Eroare încărcare set de date.",
     "location.error.unableToDetermine": "Locația nu a putut fi determinată. Te rugăm să verifici dacă setarea de localizare este activată în browser.",
-    "route.error.unableToDetermine": "Traseul nu a putut fi afișat, eroare determinare locație. Activează mecanismul de localizare apăsând pe butonul din drepta jos al hărții.",
+    "route.error.unableToDetermine": "Traseul nu poate fi afișat, eroare determinare locație. Activează localizarea pe hartă apăsând butonul din drepta jos al hărții.",
     "parking.error.unableToDetermineLocation": "Locația locului de parcare nu a putut fi determinată.",
     "airQuality.title.healthy": "Sănătos",
     "airQuality.message.healthy": "Calitatea aerului este considerată satisfăcătoare, poluarea aerului nu prezintă un risc sau riscul este unul scăzut.",
@@ -15,6 +15,35 @@
     "airQuality.title.veryUnhealthy": "Foarte nesănătos",
     "airQuality.message.veryUnhealthy": "Este recomandat ca persoanele cu afecțiuni respiratorii sau cardiace să evite activitățiile de orice fel desfășurate în aer liber.",
     "airQuality.title.hazardous": "Periculos",
-    "airQuality.message.hazardous": "Este recomandat ca persoanele de orice vârstă să evite orice activitate în aer liber."
+    "airQuality.message.hazardous": "Este recomandat ca persoanele de orice vârstă să evite orice activitate în aer liber.",
+
+    "route.addresses.unableToDetermine": "Nu am putut determina adresa pentru locația curentă."
+  },
+  "labels": {
+    "centerOnCity": "Centrează harta pe Municipiul Iași",
+    "myLocation": "Locația mea",
+    "myLocation.showMyLocation": "Afișează locația mea pe hartă",
+    "myLocation.showMyLocationPersistent": "Afișează locația mea în timp real",
+    "parking.parkingFree": "Liber",
+    "parking.parkingOccupied": "Ocupat",
+    "parking.parkingReserved": "Rezervat",
+    "parking.number": "Număr loc parcare",
+    "parking.name": "Zonă parcare",
+    "parking.deepLinkWaze": "Waze",
+    "parking.deepLinkMaps": "Google Maps",
+    "transportation.identifier": "Cod identificare",
+    "transportation.lastUpdate": "Ultima actualizare",
+    "transportation.tkTimeAgo": "acum {{TIME}} minute",
+    "transportation.direction": "Direcție",
+    "transportation.speed": "Viteză",
+    "transportation.tkSpeed": "{{SPEED}} km/h",
+    "airQuality.sensorValues": "Valori sensor",
+    "airQuality.pm1": "PM 1",
+    "airQuality.pm10": "PM 10",
+    "airQuality.pm25": "PM 2.5",
+    "airQuality.temperature": "Temperatura",
+    "airQuality.lastUpdate": "Ultima actualizare",
+    "wasteCollection.lastUpdate": "Ultima actualizare",
+    "showTimeEstimation": "Afișează estimare"
   }
 }
