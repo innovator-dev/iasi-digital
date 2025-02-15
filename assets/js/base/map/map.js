@@ -800,12 +800,16 @@ class CityApp {
                                 // titleIcon: `&#xe016;`,
                                 titleLabel: '',
                                 titleLabelIcon: `\u{e016}`,
-                                content: `<ul><li>Latitudine: ${this.data.user.coordinates.lat}</li><li>Longitudine: ${this.data.user.coordinates.lng}</li></ul>`
+                                content: `<ul><li>Latitudine: ${this.data.user.coordinates.lat}</li><li>Longitudine: ${this.data.user.coordinates.lng}</li></ul>`,
+                                onClose: () => {
+                                    this.data.user._ref.content.classList.remove('pin-bounce');
+                                }
                             });
 
                             // Open popup
                             this.data.user._ref.addListener('click', () => {
                                 CityApp.mapUtils('openPopup', {ref: this.data.user._ref});
+                                this.data.user._ref.content.classList.add('pin-bounce');
                             });
 
                         }, () => {
@@ -960,13 +964,15 @@ class CityApp {
                             const toggleChecked = this.data.map.controls[dataAttr.set].checked;
                             if (toggleChecked) {
                                 // Show pins
-                                this.data.sets[dataAttr.set].show();
+                                this.data.sets[dataAttr.set].show(() => {
+                                    this.data.map.controls.spinner.classList.add('hide');
+                                });
                             } else {
                                 // Hide pins and reset watcher
-                                this.data.sets[dataAttr.set].hide();
+                                this.data.sets[dataAttr.set].hide(() => {
+                                    this.data.map.controls.spinner.classList.add('hide');
+                                });
                             }
-
-                            this.data.map.controls.spinner.classList.add('hide');
                         });
                     }
                 }
