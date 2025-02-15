@@ -49,6 +49,7 @@ class PublicParking extends DataSet {
      */
     static cluster = null;
     static clusterMarkers = [];
+    static clusterImage = 'PHN2ZyBmaWxsPSIjNGNhY2Y2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMjQwIj4KICAgICAgICAgICAgICAgIDxjaXJjbGUgY3g9IjEyMCIgY3k9IjEyMCIgb3BhY2l0eT0iMSIgcj0iNzAiPjwvY2lyY2xlPgogICAgICAgICAgICAgICAgPGNpcmNsZSBjeD0iMTIwIiBjeT0iMTIwIiBvcGFjaXR5PSIuNyIgcj0iOTAiPjwvY2lyY2xlPgogICAgICAgICAgICAgICAgPGNpcmNsZSBjeD0iMTIwIiBjeT0iMTIwIiBvcGFjaXR5PSIuMyIgcj0iMTEwIj48L2NpcmNsZT4KICAgICAgICAgICAgICAgIDxjaXJjbGUgY3g9IjEyMCIgY3k9IjEyMCIgb3BhY2l0eT0iLjIiIHI9IjEzMCI+PC9jaXJjbGU+CiAgICAgICAgICAgICAgICA8L3N2Zz4=';
 
     /**
      * Selected marker.
@@ -97,12 +98,16 @@ class PublicParking extends DataSet {
         } else {
             this.data.forEach((parking) => {
 
+                // Pin label
+                const label = document.createElement('div');
+                label.innerText = 'P';
+
                 // Custom marker
                 const pin = new google.maps.marker.PinElement({
                     glyphColor: '#fff',
                     background: parseInt(parking.stare) === 2 ? '#f64c4c' : '#4cacf6',
                     borderColor: parseInt(parking.stare) === 2 ? '#e83636' : '#3893d9',
-                    glyph: 'P'
+                    glyph: label
                 });
 
                 if (this.markers[parking.sensorId]) {
@@ -145,10 +150,10 @@ class PublicParking extends DataSet {
 
                         // Create InfoWindow
                         CityApp.mapUtils('createPopup', {
-                            title: this.markers[parking.sensorId].state === 1 ? CityApp.config.labels.parkingFree : CityApp.config.labels.parkingOccupied,
+                            title: this.markers[parking.sensorId].state === 1 ? CityApp.config.labels['parking.parkingFree'] : CityApp.config.labels['parking.parkingOccupied'],
                             titleLabel: `P`,
                             titleLabelClass: [`parking`, `parking-${this.markers[parking.sensorId].state}`],
-                            content: `<ul><li>Parcare: ${PublicParking.parkingMapping[this.markers[parking.sensorId].parkingId]}</li><li>Număr loc parcare: ${this.markers[parking.sensorId].number}</li></ul>`
+                            content: `<ul><li>${CityApp.config.labels['parking.name']}: ${PublicParking.parkingMapping[this.markers[parking.sensorId].parkingId]}</li><li>${CityApp.config.labels['parking.number']}: ${this.markers[parking.sensorId].number}</li></ul><nav><a href="https://www.waze.com/ul?ll=${parseFloat(parking.latitude)}%2C${parseFloat(parking.longitude)}&navigate=yes&zoom=17" target="_blank" class="btn btn-default btn-sm"><span class="ic-mr-5" data-icon="&#xe023;"></span> ${CityApp.config.labels['parking.deepLinkWaze']}</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&destination=${parseFloat(parking.latitude)}%2C${parseFloat(parking.longitude)}" target="_blank" class="btn btn-default btn-sm"><span class="ic-mr-5" data-icon="&#xe02a;"></span> ${CityApp.config.labels['parking.deepLinkMaps']}</a></nav>`
                         });
 
                         // Show InfoWindow
@@ -156,6 +161,10 @@ class PublicParking extends DataSet {
                     });
                 }
             });
+
+            // Metrics
+            this.metrics.parkingFree = this.data.filter((parking) => parking.stare === 1).length;
+            this.metrics.parkingOccupied = this.data.length - this.metrics.parkingFree;
         }
     }
 
@@ -181,7 +190,20 @@ class PublicParking extends DataSet {
             if (markerClusterer !== undefined && markerClusterer.MarkerClusterer !== undefined && PublicParking.cluster === null) {
                 PublicParking.cluster = new markerClusterer.MarkerClusterer({
                     map: CityApp.data.map._ref,
-                    markers: PublicParking.clusterMarkers
+                    markers: PublicParking.clusterMarkers,
+                    renderer: {
+                        render: ({count, position}) =>
+                            new google.maps.Marker({
+                                label: {text: String(count), color: "#fff", fontSize: "13px", fontWeight: "600"},
+                                icon: {
+                                    url: `data:image/svg+xml;base64,${PublicParking.clusterImage}`,
+                                    scaledSize: new google.maps.Size(46, 46),
+                                },
+                                position,
+                                // adjust zIndex to be above other markers
+                                zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
+                            })
+                    }
                 });
             }
 
@@ -213,15 +235,18 @@ class PublicParking extends DataSet {
 
         // Return watcher to default value
         PublicParking.setWatcher(300000, () => {
-            this.getData(() => {
-                this.render();
-            });
+            this.getData();
         });
 
         // Clear cluster
         if (PublicParking.cluster) {
             PublicParking.cluster.clearMarkers();
             PublicParking.cluster = null;
+        }
+
+        // Callback
+        if (callback) {
+            callback();
         }
     }
 }
