@@ -71,6 +71,115 @@ class Observer {
 }
 
 /**
+ * DataSet resource.
+ */
+class DataSet {
+
+    /**
+     * DataSet constructor.
+     */
+    constructor() {
+
+        // Configuration and state variables
+        this._ref = null;
+        this.watcher = null;
+        this.isVisible = false;
+
+        // Data
+        this.data = {};
+
+        // Markers
+        this.markers = [];
+
+        // Props
+        this.props = {};
+
+        // Metrics
+        this.metrics = {}
+    }
+
+    /**
+     * Query dataSet API and get data.
+     * @param filter API filter
+     * @param cb Callback
+     * @returns {boolean}
+     */
+    static fetch(filter, cb) {
+
+        // Fetch dataSet data
+        return CityApp.getSetData({
+            url: CityApp.config.url,
+            method: 'POST',
+            postFields: {
+                action: 'fetch',
+                type: 'api',
+                value: filter
+            },
+            callback: cb
+        });
+    }
+
+    /**
+     * Set dataSet update watcher.
+     * @param time Time in milliseconds for watcher to run
+     * @param callback Callback to execute
+     */
+    static setWatcher(time, callback) {
+
+        // Watcher already active
+        if (this.watcher !== null) {
+            clearInterval(this.watcher);
+            this.watcher = null;
+        }
+
+        // Setup default watcher
+        // Run marker rendering
+        this.watcher = setInterval(() => {
+
+            // Execute callback
+            if (callback !== null) {
+                callback();
+            }
+        }, time);
+    }
+
+    /**
+     * Init data set consumer application.
+     */
+    init() {
+    }
+
+    /**
+     * Show data set on the map.
+     * @param callback Callback method
+     */
+    show(callback = null) {
+    }
+
+    /**
+     * Hide data set.
+     * @param callback Callback method
+     */
+    hide(callback = null) {
+    }
+
+    /**
+     * Render data set on the map.
+     * @param callback Callback method
+     */
+    render(callback = null) {
+    }
+
+    /**
+     * Check if current dataset has data.
+     * @returns {boolean}
+     */
+    hasData() {
+        return Object.keys(this.data).length > 0;
+    }
+}
+
+/**
  * City application.
  *
  * @package base\map
@@ -81,7 +190,7 @@ class CityApp {
     /**
      * Creates a new instance of CityApp.
      */
-    static initialize() {
+    static init() {
 
         // Events container
         this.events = new Observer();
@@ -90,44 +199,54 @@ class CityApp {
         this.config = {};
         this.bindConfig();
 
-        // Bind data
+        // Data
         this.data = {
 
-            // Map configuration
+            // Map
             map: {
+
+                // Map reference
                 _ref: null,
+
+                // Initial position
                 center: {
                     lat: 47.1553424,
                     lng: 27.585645
                 },
+
                 isLoaded: false,
                 popup: null,
 
-                // Map controls
-                controls: {},
-
-                // Direction service
-                direction: {
-                    isLoaded: false,
-                    service: null,
-                    renderer: null
-                }
+                // Controls
+                controls: {}
             },
 
-            // DataSets
-            dataSets: {},
+            // Data sets
+            sets: {},
+
+            // Services
+            services: {},
 
             // User
             user: {
+
+                // Map reference
                 _ref: null,
+
+                // Watcher
                 watcher: null,
-                isLoaded: false,
-                updated: null,
-                location: {
+
+                // Location
+                coordinates: {
                     lat: 0,
                     lng: 0
                 },
-                isPersistent: false
+
+                isPersistent: false,
+                isVisible: false,
+
+                // Extra proprieties
+                props: {}
             }
         };
 
@@ -316,7 +435,6 @@ class CityApp {
 
         // Parsed date
         let parsedDate = new Date(b[0], b[1] - 1, b[2], b[3], b[4], b[5]);
-
         if (isNaN(currentDate) || isNaN(parsedDate)) {
             return null;
         }
@@ -373,6 +491,82 @@ class CityApp {
     }
 
     /**
+     * Perform map related actions.
+     *
+     * @param action Map action
+     * @param props Action properties
+     */
+    static mapUtils(action, props = {}) {
+
+        // Create popup infoWindow
+        if (action === 'createPopup') {
+            if (!'title' in props || !'content' in props) {
+                throw new SyntaxError('Syntax error while performing <createPopup>.');
+            }
+
+            CityApp.data.map.popup = new google.maps.InfoWindow({
+                content: `<div id="mapPopup"><main>${props.content}</main></div>`
+            });
+
+            // Create title
+            const titleDom = document.createElement('h5');
+            if ('titleLabel' in props) {
+                const titleLabel = document.createElement('span');
+                titleLabel.classList.add('label', 'ic-mr-10');
+                titleLabel.innerText = props.titleLabel;
+
+                // Additional CSS classes
+                if ('titleLabelClass' in props) {
+                    titleLabel.classList.add(...props.titleLabelClass);
+                }
+
+                // Icon
+                if ('titleLabelIcon' in props) {
+                    titleLabel.setAttribute('data-icon', props.titleLabelIcon);
+                }
+
+                titleDom.appendChild(titleLabel);
+            }
+            const titleDomSpan = document.createElement('span');
+            titleDomSpan.innerText = props.title;
+            titleDom.appendChild(titleDomSpan);
+            CityApp.data.map.popup.setHeaderContent(titleDom);
+
+            // Attach close event
+            if ('onClose' in props) {
+                google.maps.event.addListener(CityApp.data.map.popup, 'close', props.onClose);
+            }
+
+            if ('onCloseClick' in props) {
+                google.maps.event.addListener(CityApp.data.map.popup, 'closeclick', props.onCloseClick);
+            }
+        }
+
+        // Open popup infoWindow
+        else if (action === 'openPopup') {
+            if (!'ref' in props) {
+                throw new SyntaxError('Syntax error while performing <openPopup>.');
+            }
+
+            // Open popup
+            if (CityApp.data.map.popup !== null) {
+                CityApp.data.map.popup.open(
+                    CityApp.data.map._ref,
+                    props.ref
+                );
+            }
+        }
+
+        // Close popup infoWindow
+        else if (action === 'closePopup') {
+            // Close already opened popup
+            if (CityApp.data.map.popup) {
+                CityApp.data.map.popup.close();
+            }
+        }
+    }
+
+    /**
      * Initiate Google Maps loading.
      */
     static loadMap() {
@@ -413,7 +607,7 @@ class CityApp {
                 const {AdvancedMarkerElement, PinElement} = google.maps.importLibrary('marker');
 
                 // Load spherical namespace, methods to calculate distances
-                // const {spherical} = google.maps.importLibrary('geometry');
+                const {spherical} = google.maps.importLibrary('geometry');
 
                 // Load map controls
                 this.renderMapControls();
@@ -442,19 +636,12 @@ class CityApp {
             }
 
             // Clear user data
-            this.data.user.updated = null;
-            this.data.user.isLoaded = false;
+            this.data.user.isVisible = false;
             this.data.user.isPersistent = false;
 
             // Reset coordinates
-            this.data.user.location.lat = 0;
-            this.data.user.location.lng = 0;
-        });
-
-        // Show my location
-        this.events.add('showMyLocation', () => {
-
-
+            this.data.user.coordinates.lat = 0;
+            this.data.user.coordinates.lng = 0;
         });
 
         // Controls container
@@ -476,6 +663,7 @@ class CityApp {
                 e.stopPropagation();
 
                 if (this.data.map.center.lat > 0 && this.data.map.center.lng > 0) {
+
                     // Center map
                     this.data.map._ref.panTo(new google.maps.LatLng(
                         this.data.map.center.lat,
@@ -517,14 +705,40 @@ class CityApp {
                     myLocationMapPersistentControl.setAttribute('data-state', 'showPersistent');
                     myLocationMapPersistentControl.classList.add('selected');
 
-                    // Mark as persistent
+                    // Mark location as persistent
                     this.data.user.isPersistent = true;
+
+                    // Enable watcher
+                    this.data.user.watcher = navigator.geolocation.watchPosition((position) => {
+
+                        // Get coordinates
+                        this.data.user.coordinates.lat = position.coords.latitude;
+                        this.data.user.coordinates.lng = position.coords.longitude;
+
+                        this.data.map._ref.panTo(
+                            new google.maps.LatLng(this.data.user.coordinates.lat, this.data.user.coordinates.lng));
+
+                        // Update pin location
+                        this.data.user._ref.position = {
+                            lat: parseFloat(this.data.user.coordinates.lat),
+                            lng: parseFloat(this.data.user.coordinates.lng)
+                        };
+
+                    }, () => {
+                    }, {enableHighAccuracy: true, timeout: 5000});
+
                 } else {
                     myLocationMapPersistentControl.setAttribute('data-state', 'hidePersistent');
                     myLocationMapPersistentControl.classList.remove('selected');
 
                     // Mark as persistent
                     this.data.user.isPersistent = false;
+
+                    // Clear user watcher
+                    if (this.data.user.watcher !== null) {
+                        navigator.geolocation.clearWatch(this.data.user.watcher);
+                        this.data.user.watcher = null;
+                    }
                 }
             });
 
@@ -543,44 +757,56 @@ class CityApp {
                         // Show my location real time
                         myLocationMapPersistentControl.classList.remove('hide');
 
-                        // Show my location
-                        this.data.user.watcher = navigator.geolocation.watchPosition((position) => {
+                        navigator.geolocation.getCurrentPosition((position) => {
 
                             // Get coordinates
-                            this.data.user.location.lat = position.coords.latitude;
-                            this.data.user.location.lng = position.coords.longitude;
+                            this.data.user.coordinates.lat = position.coords.latitude;
+                            this.data.user.coordinates.lng = position.coords.longitude;
 
                             // Show pin
-                            const pin = new google.maps.marker.PinElement({
-                                glyphColor: '#fff',
-                                background: '#31496d',
-                                borderColor: '#31496d'
-                            });
+                            if (this.data.user.props.pin === undefined) {
+                                this.data.user.props.pin = new google.maps.marker.PinElement({
+                                    glyphColor: '#fff',
+                                    background: '#31496d',
+                                    borderColor: '#31496d'
+                                });
+                            }
 
                             if (this.data.user._ref === null) {
                                 this.data.user._ref = new google.maps.marker.AdvancedMarkerElement({
-                                    position: {lat: parseFloat(this.data.user.location.lat), lng: parseFloat(this.data.user.location.lng)},
+                                    position: {
+                                        lat: parseFloat(this.data.user.coordinates.lat),
+                                        lng: parseFloat(this.data.user.coordinates.lng)
+                                    },
                                     map: this.data.map._ref,
                                     title: this.config.labels.myLocation,
-                                    content: pin.element
+                                    content: this.data.user.props.pin.element
                                 });
 
+                                // Associate user position with the map
                                 this.data.user._ref.setMap(this.data.map._ref);
                             }
 
-                            // Update metadata
-                            this.data.user.updated = new Date().getTime();
-                            this.data.user.isLoaded = true;
+                            // Mark user as visible
+                            this.data.user.isVisible = true;
 
-                            // Center to user
-                            if (this.data.user.isPersistent) {
-                                this.data.map._ref.panTo({
-                                    lat: parseFloat(this.data.user.location.lat),
-                                    lng: parseFloat(this.data.user.location.lng)
-                                });
+                            // Move to user position
+                            this.data.map._ref.panTo(
+                                new google.maps.LatLng(this.data.user.coordinates.lat, this.data.user.coordinates.lng));
 
-                                this.data.user._ref.setMap(this.data.map._ref);
-                            }
+                            // Create InfoWindow
+                            CityApp.mapUtils('createPopup', {
+                                title: this.config.labels.myLocation,
+                                // titleIcon: `&#xe016;`,
+                                titleLabel: '',
+                                titleLabelIcon: `\u{e016}`,
+                                content: `<ul><li>Latitudine: ${this.data.user.coordinates.lat}</li><li>Longitudine: ${this.data.user.coordinates.lng}</li></ul>`
+                            });
+
+                            // Open popup
+                            this.data.user._ref.addListener('click', () => {
+                                CityApp.mapUtils('openPopup', {ref: this.data.user._ref});
+                            });
 
                         }, () => {
 
@@ -593,8 +819,7 @@ class CityApp {
                                 if (app.config.messages['location.error.unableToDetermine']) {
                                     this.notification(app.config.messages['location.error.unableToDetermine'], 'info', 10);
                                 }
-                            }
-                            catch (e) {
+                            } catch (e) {
 
                                 this.notification(e, 'error', 10);
 
@@ -681,80 +906,9 @@ class CityApp {
 
                     /**
                      * DataSet schema.
-                     * @type {{app: null, watcher: null, loaded: boolean, args: {}, visible: boolean, data: {}, hasData: boolean, selectedMarker: null, markers: *[], updated: null}}
+                     * @type {{app: null, watcher: null, setWatcher(*, *): void, init(), data: {}, hasData: boolean, show(), isLoaded: boolean, props: {}, hide(), _ref: null, metrics: {visible: number}, render(), getData(*, *): boolean}}
                      */
-                    this.data.dataSets[dataAttr.set] = {
-
-                        // Application
-                        app: {
-                            _ref: null,
-                            watcher: null,
-                            isLoaded: false,
-                            isVisible: false
-                        },
-
-                        // Data
-                        hasData: false,
-                        data: {},
-                        dataUpdated: null,
-
-                        // Markers
-                        markers: [],
-                        selectedMarker: null,
-
-                        // Additional properties
-                        props: {},
-
-                        // Metrics
-                        metrics: {
-                            visible: 0
-                        },
-
-                        /**
-                         * Query dataSet API and get data.
-                         * @param filter API filter
-                         * @param cb Callback
-                         * @returns {boolean}
-                         */
-                        getData(filter, cb) {
-
-                            // Fetch dataSet data
-                            return CityApp.getSetData({
-                                url: CityApp.config.url,
-                                method: 'POST',
-                                postFields: {
-                                    action: 'fetch',
-                                    type: 'api',
-                                    value: filter
-                                },
-                                callback: cb
-                            });
-                        },
-
-                        /**
-                         * Set dataSet update watcher.
-                         * @param time Time in milliseconds for watcher to run
-                         * @param callback Callback to execute
-                         */
-                        setWatcher(time, callback) {
-
-                            // Watcher already active
-                            if (this.app.watcher !== null) {
-                                clearInterval(this.app.watcher);
-                                this.app.watcher = null;
-                            }
-
-                            // Setup default watcher
-                            // Run marker rendering
-                            this.app.watcher = setInterval(() => {
-
-                                // Execute callback
-                                if (callback !== null) {
-                                    callback();
-                                }
-                            }, time);
-                        }
-                    };
+                    this.data.sets[dataAttr.set] = new DataSet();
 
                     // Traffic layer
                     if (dataAttr.set === 'trafficLayer') {
@@ -767,14 +921,14 @@ class CityApp {
                             const toggleChecked = this.data.map.controls[dataAttr.set].checked;
                             if (toggleChecked) {
                                 // Show traffic layer
-                                this.data.dataSets[dataAttr.set].app._ref = new google.maps.TrafficLayer();
-                                this.data.dataSets[dataAttr.set].app._ref.setMap(this.data.map._ref);
-                                this.data.dataSets[dataAttr.set].visible = true;
+                                this.data.sets[dataAttr.set]._ref = new google.maps.TrafficLayer();
+                                this.data.sets[dataAttr.set]._ref.setMap(this.data.map._ref);
+                                this.data.sets[dataAttr.set].isVisible = true;
                             } else {
                                 // Hide traffic layer
-                                this.data.dataSets[dataAttr.set].visible = false;
-                                this.data.dataSets[dataAttr.set].app._ref.setMap(null);
-                                this.data.dataSets[dataAttr.set].app._ref = null;
+                                this.data.sets[dataAttr.set]._ref.setMap(null);
+                                this.data.sets[dataAttr.set]._ref = null;
+                                this.data.sets[dataAttr.set].isVisible = false;
                             }
 
                             this.data.map.controls.spinner.classList.add('hide');
@@ -785,17 +939,17 @@ class CityApp {
                     else if (dataAttr.source) {
                         this.load(dataAttr.source, () => {
 
-                            // Mark dataSet as loaded
-                            this.data.dataSets[dataAttr.set].app.isLoaded = true;
+                            // Application loaded
+                            this.data.sets[dataAttr.set].init();
 
-                            // DataSet has data
-                            if (this.data.dataSets[dataAttr.set].app._ref.getData()) {
-                                this.data.dataSets[dataAttr.set].hasData = true;
-                                this.data.dataSets[dataAttr.set].app._ref.init();
-                            } else {
-                                // Disable controller
-                                this.data.map.controls[dataAttr.set].setAttribute('disabled', 'disabled');
-                            }
+                            // Fetch data
+                            this.data.sets[dataAttr.set].getData(() => {
+                                if (!this.data.sets[dataAttr.set].hasData()) {
+
+                                    // Disable controller
+                                    this.data.map.controls[dataAttr.set].setAttribute('disabled', 'disabled');
+                                }
+                            });
                         });
 
                         // Enable
@@ -806,10 +960,10 @@ class CityApp {
                             const toggleChecked = this.data.map.controls[dataAttr.set].checked;
                             if (toggleChecked) {
                                 // Show pins
-                                this.data.dataSets[dataAttr.set].app._ref.show();
+                                this.data.sets[dataAttr.set].show();
                             } else {
                                 // Hide pins and reset watcher
-                                this.data.dataSets[dataAttr.set].app._ref.hide();
+                                this.data.sets[dataAttr.set].hide();
                             }
 
                             this.data.map.controls.spinner.classList.add('hide');
@@ -827,7 +981,7 @@ class CityApp {
 (() => {
 
     // Initialize app
-    CityApp.initialize();
+    CityApp.init();
     window.CityApp = CityApp;
 
 })();
