@@ -136,6 +136,24 @@ class AirQuality extends DataSet {
     static dataSet = 'cf3f-2309-44d1-8e0c-1137';
 
     /**
+     * AQI scale.
+     * @type {{pm25: number[], pm10: number[]}}
+     */
+    static aqiScale = {
+        pm25: [0, 12, 35.5, 55.5, 150.5, 250.5, 350.5, 500.5],
+        pm10: [0, 55, 155, 255, 355, 425, 505, 605]
+    };
+
+    /**
+     * AQI range.
+     * @type {{pm25: number[], pm10: number[]}}
+     */
+    static aqiRange = {
+        pm25: [0, 50, 100, 150, 200, 300, 400, 500],
+        pm10: [0, 50, 100, 150, 200, 300, 400, 500]
+    };
+
+    /**
      * Initialize app.
      */
     init() {
