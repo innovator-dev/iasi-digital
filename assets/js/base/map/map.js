@@ -127,10 +127,7 @@ class DataSet {
     static setWatcher(time, callback) {
 
         // Watcher already active
-        if (this.watcher !== null) {
-            clearInterval(this.watcher);
-            this.watcher = null;
-        }
+        this.clearWatcher();
 
         // Setup default watcher
         // Run marker rendering
@@ -141,6 +138,17 @@ class DataSet {
                 callback();
             }
         }, time);
+    }
+
+    /**
+     * Clears dataSet update watcher.
+     */
+    static clearWatcher() {
+
+        if (this.watcher !== null) {
+            clearInterval(this.watcher);
+            this.watcher = null;
+        }
     }
 
     /**
@@ -531,6 +539,11 @@ class CityApp {
             titleDomSpan.innerText = props.title;
             titleDom.appendChild(titleDomSpan);
             CityApp.data.map.popup.setHeaderContent(titleDom);
+
+            // Set position
+            if ('position' in props) {
+                CityApp.data.map.popup.setPosition(props.position);
+            }
 
             // Attach close event
             if ('onClose' in props) {
