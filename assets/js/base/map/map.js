@@ -964,15 +964,13 @@ class CityApp {
                             const toggleChecked = this.data.map.controls[dataAttr.set].checked;
                             if (toggleChecked) {
                                 // Show pins
-                                this.data.sets[dataAttr.set].show(() => {
-                                    this.data.map.controls.spinner.classList.add('hide');
-                                });
+                                this.data.sets[dataAttr.set].show();
                             } else {
                                 // Hide pins and reset watcher
-                                this.data.sets[dataAttr.set].hide(() => {
-                                    this.data.map.controls.spinner.classList.add('hide');
-                                });
+                                this.data.sets[dataAttr.set].hide();
                             }
+
+                            this.data.map.controls.spinner.classList.add('hide');
                         });
                     }
                 }
