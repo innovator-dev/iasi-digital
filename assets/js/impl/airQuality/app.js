@@ -223,7 +223,7 @@ class AirQuality extends DataSet {
                                 title: aqi.heading,
                                 titleLabel: sensor.avgPm25,
                                 titleLabelClass: [`aqi`, `aqi-${aqi.css}`],
-                                content: `<p>${aqi.description}</p><h6>${CityApp.config.labels['airQuality.sensorValues']}</h6><ul><li>${CityApp.config.labels['airQuality.pm1']}: ${sensor.avgPm1} µg/m³</li><li>${CityApp.config.labels['airQuality.pm25']}: ${sensor.avgPm25} µg/m³</li><li>${CityApp.config.labels['airQuality.pm10']}: ${sensor.avgPm10} µg/m³</li></ul><h6>${CityApp.config.labels['airQuality.lastUpdate']}</h6><p>${new Date(sensor.lastUpdate * 1000).toLocaleString('ro-RO', {
+                                content: `<p>${aqi.description}</p><h6>${CityApp.config.labels['airQuality.sensorValues']}</h6><ul><li>${CityApp.config.labels['airQuality.pm1']}: ${sensor.avgPm1} µg/m³</li><li>${CityApp.config.labels['airQuality.pm25']}: ${sensor.avgPm25} µg/m³</li><li>${CityApp.config.labels['airQuality.pm10']}: ${sensor.avgPm10} µg/m³</li><li>${CityApp.config.labels['airQuality.temperature']}: ${sensor.avgTemperature}<span data-icon="&#xe00c;"></span></li></ul><h6>${CityApp.config.labels['airQuality.lastUpdate']}</h6><p>${new Date(sensor.lastUpdate * 1000).toLocaleString('ro-RO', {
                                     weekday: "short",
                                     year: "numeric",
                                     month: "short",
