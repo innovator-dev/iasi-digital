@@ -49,7 +49,7 @@ class PublicParking extends DataSet {
      */
     static cluster = null;
     static clusterMarkers = [];
-    static clusterImage = 'PHN2ZyBmaWxsPSIjNGNhY2Y2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAgMjQwIj4KICAgICAgICAgICAgICAgIDxjaXJjbGUgY3g9IjEyMCIgY3k9IjEyMCIgb3BhY2l0eT0iMSIgcj0iNzAiPjwvY2lyY2xlPgogICAgICAgICAgICAgICAgPGNpcmNsZSBjeD0iMTIwIiBjeT0iMTIwIiBvcGFjaXR5PSIuNyIgcj0iOTAiPjwvY2lyY2xlPgogICAgICAgICAgICAgICAgPGNpcmNsZSBjeD0iMTIwIiBjeT0iMTIwIiBvcGFjaXR5PSIuMyIgcj0iMTEwIj48L2NpcmNsZT4KICAgICAgICAgICAgICAgIDxjaXJjbGUgY3g9IjEyMCIgY3k9IjEyMCIgb3BhY2l0eT0iLjIiIHI9IjEzMCI+PC9jaXJjbGU+CiAgICAgICAgICAgICAgICA8L3N2Zz4=';
+    static clusterImage = '<svg fill="#4cacf6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><circle cx="120" cy="120" opacity="1" r="70"></circle><circle cx="120" cy="120" opacity=".7" r="90"></circle><circle cx="120" cy="120" opacity=".3" r="110"></circle><circle cx="120" cy="120" opacity=".2" r="130"></circle></svg>';
 
     /**
      * Selected marker.
@@ -190,20 +190,7 @@ class PublicParking extends DataSet {
             if (markerClusterer !== undefined && markerClusterer.MarkerClusterer !== undefined && PublicParking.cluster === null) {
                 PublicParking.cluster = new markerClusterer.MarkerClusterer({
                     map: CityApp.data.map._ref,
-                    markers: PublicParking.clusterMarkers,
-                    renderer: {
-                        render: ({count, position}) =>
-                            new google.maps.Marker({
-                                label: {text: String(count), color: "#fff", fontSize: "13px", fontWeight: "600"},
-                                icon: {
-                                    url: `data:image/svg+xml;base64,${PublicParking.clusterImage}`,
-                                    scaledSize: new google.maps.Size(46, 46),
-                                },
-                                position,
-                                // adjust zIndex to be above other markers
-                                zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
-                            })
-                    }
+                    markers: PublicParking.clusterMarkers
                 });
             }
 
