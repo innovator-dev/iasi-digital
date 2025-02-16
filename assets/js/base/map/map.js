@@ -491,11 +491,11 @@ class CityApp {
                     return false;
                 });
 
-            return true;
-
         } catch (err) {
             this.notification(err, 'error', 10);
         }
+
+        return true;
     }
 
     /**
