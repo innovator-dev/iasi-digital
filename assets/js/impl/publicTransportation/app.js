@@ -20,8 +20,12 @@ class Vehicle {
      * Creates a new instance of Vehicle.
      * @constructor
      * @suppress {misplacedTypeAnnotation}
+     *
+     * @param props Vehicle properties
+     * @param routes Routes
+     * @param trips Trips
      */
-    constructor(props) {
+    constructor(props, routes = [], trips = []) {
 
         // Vehicle identification
         this.id = props.id || 0;
@@ -35,17 +39,17 @@ class Vehicle {
 
         // Vehicle route
         this.routeId = props.route_id || 0;
-        this.route = PublicTransportation.vehicleRoutes[this.routeId];
-        this.routeName = this.route && ('long' in this.route) ? this.route['long'] : null;
-        this.routeNumber = this.route && ('name' in this.route) ? this.route['name'] : null;
-        this.routeType = this.route && ('type' in this.route) ? this.route['type'] : -1;
+        this.route = routes[this.routeId];
+        this.routeName = this.route && (this.route.hasOwnProperty('long')) ? this.route['long'] : null;
+        this.routeNumber = this.route && (this.route.hasOwnProperty('name')) ? this.route['name'] : null;
+        this.routeType = this.route && (this.route.hasOwnProperty('type')) ? this.route['type'] : -1;
 
         // Vehicle trip
         this.tripId = props.trip_id;
-        this.trip = PublicTransportation.vehicleTrips[this.tripId];
-        this.tripHeadSign = this.trip && ('headSign' in this.trip) ? this.trip['headSign'] : null;
-        this.tripDirection = this.trip && ('direction' in this.trip) ? this.trip['direction'] : 0;
-        this.tripRoute = this.trip && ('route' in this.trip) ? this.trip['route'] : null;
+        this.trip = trips[this.tripId];
+        this.tripHeadSign = this.trip && (this.trip.hasOwnProperty('headSign')) ? this.trip['headSign'] : null;
+        this.tripDirection = this.trip && (this.trip.hasOwnProperty('direction')) ? this.trip['direction'] : 0;
+        this.tripRoute = this.trip && (this.trip.hasOwnProperty('route')) ? this.trip['route'] : null;
 
         // Vehicle speed
         this.speed = props.speed || 0;
@@ -102,13 +106,23 @@ class PublicTransportation extends DataSet {
          * @type {string}
          */
         this.dataSetTrips = 'dc2a-cd0a-477f-95f3-1107/52cf25d5c64d1f700b8867cee05112525698';
-        this.vehicleTrips = {};
+
+        /**
+         * Vehicle trips.
+         * @type {*[]}
+         */
+        this.vehicleTrips = [];
 
         /**
          * API resource for fetching routes.
          * @type {string}
          */
         this.dataSetRoutes = 'https://iasidigital.idealweb.ro/data/publicTransportation/routes.json';
+
+        /**
+         * Vehicle routes.
+         * @type {*[]}
+         */
         this.vehicleRoutes = [];
     }
 
@@ -214,7 +228,7 @@ class PublicTransportation extends DataSet {
             this.data.forEach((entry) => {
 
                 // Create a new Vehicle instance
-                const vehicle = new Vehicle(entry);
+                const vehicle = new Vehicle(entry, this.vehicleRoutes, this.vehicleTrips);
 
                 // Validate vehicle
                 if (vehicle.latitude && vehicle.longitude && vehicle.routeId && vehicle.tripId && vehicle.routeName && vehicle.lastUpdateFriendly < 60) {
@@ -234,7 +248,7 @@ class PublicTransportation extends DataSet {
 
                         // Get route colors
                         let [backgroundColor, textColor] = this.routes[vehicle.routeNumber] ?
-                            this.routes[vehicle.routeNumber] : PublicTransportation.routes[0];
+                            this.routes[vehicle.routeNumber] : this.routes[0];
 
                         // Custom label for marker
                         const label = document.createElement('div');
