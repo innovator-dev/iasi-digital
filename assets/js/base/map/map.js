@@ -72,11 +72,13 @@ class Observer {
 
 /**
  * DataSet resource.
+ * @suppress {misplacedTypeAnnotation}
  */
 class DataSet {
 
     /**
      * DataSet constructor.
+     * @constructor
      */
     constructor() {
 
@@ -124,7 +126,7 @@ class DataSet {
      * @param time Time in milliseconds for watcher to run
      * @param callback Callback to execute
      */
-    static setWatcher(time, callback) {
+    setWatcher(time, callback) {
 
         // Watcher already active
         this.clearWatcher();
@@ -143,7 +145,7 @@ class DataSet {
     /**
      * Clears dataSet update watcher.
      */
-    static clearWatcher() {
+    clearWatcher() {
 
         if (this.watcher !== null) {
             clearInterval(this.watcher);
