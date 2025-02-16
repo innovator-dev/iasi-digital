@@ -13,11 +13,14 @@
 
 /**
  * Air Quality sensor resource.
+ *
+ * @suppress {misplacedTypeAnnotation}
  */
 class Sensor {
 
     /**
      * Air Quality sensor constructor.
+     * @constructor
      */
     constructor(props) {
 
@@ -31,29 +34,29 @@ class Sensor {
         this.longitude = props.longitude;
 
         // Sensor data
-        this.aqi = ('aqi' in props) ? props.aqi : 0;
-        this.pm1 = ('last_pm1' in props) ? props.last_pm1 : 0;
-        this.pm10 = ('last_pm10' in props) ? props.last_pm10 : 0;
-        this.pm25 = ('last_pm25' in props) ? props.last_pm25 : 0;
-        this.temperature = ('last_temperature' in props) ? props.last_temperature : 0;
-        this.ch2o = ('last_ch2o' in props) ? props.last_ch2o : 0;
-        this.co2 = ('last_co2' in props) ? props.last_co2 : 0;
-        this.noise = ('last_noise' in props) ? props.last_noise : 0;
-        this.humidity = ('last_humidity' in props) ? props.last_humidity : 0;
-        this.o3 = ('last_o3' in props) ? props.last_o3 : 0;
-        this.voc = ('last_voc' in props) ? props.last_voc : 0;
+        this.aqi = (props.hasOwnProperty('aqi')) ? props.aqi : 0;
+        this.pm1 = (props.hasOwnProperty('last_pm1')) ? props.last_pm1 : 0;
+        this.pm10 = (props.hasOwnProperty('last_pm10')) ? props.last_pm10 : 0;
+        this.pm25 = (props.hasOwnProperty('last_pm25')) ? props.last_pm25 : 0;
+        this.temperature = (props.hasOwnProperty('last_temperature')) ? props.last_temperature : 0;
+        this.ch2o = (props.hasOwnProperty('last_ch2o')) ? props.last_ch2o : 0;
+        this.co2 = (props.hasOwnProperty('last_co2')) ? props.last_co2 : 0;
+        this.noise = (props.hasOwnProperty('last_noise')) ? props.last_noise : 0;
+        this.humidity = (props.hasOwnProperty('last_humidity')) ? props.last_humidity : 0;
+        this.o3 = (props.hasOwnProperty('last_o3')) ? props.last_o3 : 0;
+        this.voc = (props.hasOwnProperty('last_voc')) ? props.last_voc : 0;
 
         // Avg
-        this.avgPm1 = ('avg_pm1' in props) ? props.avg_pm1 : 0;
-        this.avgPm10 = ('avg_pm10' in props) ? props.avg_pm10 : 0;
-        this.avgPm25 = ('avg_pm25' in props) ? props.avg_pm25 : 0;
-        this.avgTemperature = ('avg_temperature' in props) ? props.avg_temperature : 0;
-        this.avgCh2o = ('avg_ch2o' in props) ? props.avg_ch2o : 0;
-        this.avgCo2 = ('avg_co2' in props) ? props.avg_co2 : 0;
-        this.avgNoise = ('avg_noise' in props) ? props.avg_noise : 0;
-        this.avgHumidity = ('avg_humidity' in props) ? props.avg_humidity : 0;
-        this.avgO3 = ('avg_o3' in props) ? props.avg_o3 : 0;
-        this.avgVoc = ('avg_voc' in props) ? props.avg_voc : 0;
+        this.avgPm1 = (props.hasOwnProperty('avg_pm1')) ? props.avg_pm1 : 0;
+        this.avgPm10 = (props.hasOwnProperty('avg_pm10')) ? props.avg_pm10 : 0;
+        this.avgPm25 = (props.hasOwnProperty('avg_pm25')) ? props.avg_pm25 : 0;
+        this.avgTemperature = (props.hasOwnProperty('avg_temperature')) ? props.avg_temperature : 0;
+        this.avgCh2o = (props.hasOwnProperty('avg_ch2o')) ? props.avg_ch2o : 0;
+        this.avgCo2 = (props.hasOwnProperty('avg_co2')) ? props.avg_co2 : 0;
+        this.avgNoise = (props.hasOwnProperty('avg_noise')) ? props.avg_noise : 0;
+        this.avgHumidity = (props.hasOwnProperty('avg_humidity')) ? props.avg_humidity : 0;
+        this.avgO3 = (props.hasOwnProperty('avg_o3')) ? props.avg_o3 : 0;
+        this.avgVoc = (props.hasOwnProperty('avg_voc')) ? props.avg_voc : 0;
     }
 
     /**
@@ -126,32 +129,49 @@ class Sensor {
 /**
  * Air Quality application.
  * Consuming OpenData Iași Portal.
+ *
+ * @extends {DataSet}
+ * @suppress {misplacedTypeAnnotation}
  */
 class AirQuality extends DataSet {
 
     /**
-     * DataSet API handler.
-     * @type {string}
+     * Dataset application constructor.
+     * @constructor
      */
-    static dataSet = 'cf3f-2309-44d1-8e0c-1137';
+    constructor() {
+        super();
 
-    /**
-     * AQI scale.
-     * @type {{pm25: number[], pm10: number[]}}
-     */
-    static aqiScale = {
-        pm25: [0, 12, 35.5, 55.5, 150.5, 250.5, 350.5, 500.5],
-        pm10: [0, 55, 155, 255, 355, 425, 505, 605]
-    };
+        /**
+         * API resource handler for fetching air quality data.
+         * @type {string}
+         */
+        this.dataSet = 'cf3f-2309-44d1-8e0c-1137';
 
-    /**
-     * AQI range.
-     * @type {{pm25: number[], pm10: number[]}}
-     */
-    static aqiRange = {
-        pm25: [0, 50, 100, 150, 200, 300, 400, 500],
-        pm10: [0, 50, 100, 150, 200, 300, 400, 500]
-    };
+        /**
+         * AQI scale.
+         * @type {{pm25: number[], pm10: number[]}}
+         */
+        this.aqiScale = {
+            pm25: [0, 12, 35.5, 55.5, 150.5, 250.5, 350.5, 500.5],
+            pm10: [0, 55, 155, 255, 355, 425, 505, 605]
+        };
+
+        /**
+         * AQI range.
+         * @type {{pm25: number[], pm10: number[]}}
+         */
+        this.aqiRange = {
+            pm25: [0, 50, 100, 150, 200, 300, 400, 500],
+            pm10: [0, 50, 100, 150, 200, 300, 400, 500]
+        };
+
+        /**
+         * Selected marker.
+         * @type {null}
+         */
+        this.selectedMarker = null;
+    }
 
     /**
      * Initialize app.
@@ -159,7 +179,7 @@ class AirQuality extends DataSet {
     init() {
 
         // Refresh data every 5 minute
-        AirQuality.setWatcher(300000, () => {
+        this.setWatcher(300000, () => {
             this.getData();
         });
     }
@@ -170,7 +190,7 @@ class AirQuality extends DataSet {
      * @returns {boolean}
      */
     getData(callback = null) {
-        return AirQuality.fetch(AirQuality.dataSet, (json) => {
+        return AirQuality.fetch(this.dataSet, (json) => {
             this.data = json;
             if (callback) {
                 callback();
@@ -233,6 +253,9 @@ class AirQuality extends DataSet {
                         // Open popup
                         this.markers[sensor.id]._ref.addListener('click', () => {
 
+                            // Marker as selected
+                            this.selectedMarker = this.markers[sensor.id]._ref;
+
                             // Close InfoWindow
                             CityApp.mapUtils('closePopup');
 
@@ -249,7 +272,10 @@ class AirQuality extends DataSet {
                                     hour: "numeric",
                                     minute: "numeric"
                                 })}</p>`,
-                                position: this.markers[sensor.id]._ref.getCenter()
+                                position: this.markers[sensor.id]._ref.getCenter(),
+                                onClick: () => {
+                                    this.selectedMarker = null;
+                                }
                             });
 
                             // Show InfoWindow
@@ -307,7 +333,7 @@ class AirQuality extends DataSet {
         this.isVisible = false;
 
         // Clear update watcher
-        AirQuality.clearWatcher();
+        this.clearWatcher();
 
         // Callback
         if (callback) {
