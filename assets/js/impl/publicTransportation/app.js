@@ -117,7 +117,7 @@ class PublicTransportation extends DataSet {
          * API resource for fetching routes.
          * @type {string}
          */
-        this.dataSetRoutes = 'https://iasidigital.idealweb.ro/data/publicTransportation/routes.json';
+        this.dataSetRoutes = 'https://iasi.digital/data/publicTransportation/routes.json';
 
         /**
          * Vehicle routes.
