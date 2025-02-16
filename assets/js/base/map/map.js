@@ -508,7 +508,7 @@ class CityApp {
 
         // Create popup infoWindow
         if (action === 'createPopup') {
-            if (!'title' in props || !'content' in props) {
+            if (!(props.hasOwnProperty('title')) || !(props.hasOwnProperty('content'))) {
                 throw new SyntaxError('Syntax error while performing <createPopup>.');
             }
 
@@ -518,18 +518,18 @@ class CityApp {
 
             // Create title
             const titleDom = document.createElement('h5');
-            if ('titleLabel' in props) {
+            if (props.hasOwnProperty('titleLabel')) {
                 const titleLabel = document.createElement('span');
                 titleLabel.classList.add('label', 'ic-mr-10');
                 titleLabel.innerText = props.titleLabel;
 
                 // Additional CSS classes
-                if ('titleLabelClass' in props) {
+                if (props.hasOwnProperty('titleLabelClass')) {
                     titleLabel.classList.add(...props.titleLabelClass);
                 }
 
                 // Icon
-                if ('titleLabelIcon' in props) {
+                if (props.hasOwnProperty('titleLabelIcon')) {
                     titleLabel.setAttribute('data-icon', props.titleLabelIcon);
                 }
 
@@ -541,23 +541,23 @@ class CityApp {
             CityApp.data.map.popup.setHeaderContent(titleDom);
 
             // Set position
-            if ('position' in props) {
+            if (props.hasOwnProperty('position')) {
                 CityApp.data.map.popup.setPosition(props.position);
             }
 
             // Attach close event
-            if ('onClose' in props) {
+            if (props.hasOwnProperty('onClose')) {
                 google.maps.event.addListener(CityApp.data.map.popup, 'close', props.onClose);
             }
 
-            if ('onCloseClick' in props) {
+            if (props.hasOwnProperty('onCloseClick')) {
                 google.maps.event.addListener(CityApp.data.map.popup, 'closeclick', props.onCloseClick);
             }
         }
 
         // Open popup infoWindow
         else if (action === 'openPopup') {
-            if (!'ref' in props) {
+            if (!(props.hasOwnProperty('ref'))) {
                 throw new SyntaxError('Syntax error while performing <openPopup>.');
             }
 
