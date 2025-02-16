@@ -49,39 +49,8 @@
   display: flex;
   flex-flow: column nowrap;
 
-  width: 270px;
+  max-width: 270px;
   // padding: 6px 0;
-
-  // Popup header
-  & > header {
-    display: flex;
-    flex-flow: row;
-    align-items: center;
-
-    font-size: 1em;
-    padding: 0;
-    margin: 0;
-
-    // Headings
-    h5 {
-      font-weight: 500;
-      font-size: 1.3em;
-      padding: 0;
-      margin: 0;
-    }
-
-    h6 {
-      font-weight: 500;
-      font-size: 1em;
-      margin: 0 auto .25em;
-      padding: 0;
-    }
-
-    // Vehicle type{
-    span.vehicle-type {
-      font-size: 1em;
-    }
-  }
 
   & > main {
 
@@ -103,10 +72,14 @@
     // Navigation
     nav {
       display: flex;
-      flex-flow: row nowrap;
+      flex-flow: column nowrap;
       justify-content: space-around;
       align-items: center;
       margin: 1em auto 0;
+
+      @media (min-width: @mediaQueryMedium) {
+        flex-flow: row nowrap;
+      }
 
       input[type=submit], input[type=button], input[type=reset], button, a.btn {
         .grid;
@@ -479,7 +452,10 @@ span.parking {
 // Google Maps overridden classes
 .gm-style-iw-d {
   overflow: unset !important;
-  padding: 0 1em 1em 0;
+
+  @media (min-width: @mediaQueryMedium) {
+    padding: 0 1em 1em 0;
+  }
 }
 
 .gm-style-iw {
@@ -494,13 +470,15 @@ span.parking {
   margin-bottom: .8em;
 
   & > h5 {
-    display: flex;
-    align-items: center;
-
     max-width: 270px;
     font-weight: 500;
     font-size: 1.3em;
     padding: 0;
     margin: 0;
+
+    @media (min-width: @mediaQueryMedium) {
+      display: flex;
+      align-items: center;
+    }
   }
 }
