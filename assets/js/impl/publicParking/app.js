@@ -14,47 +14,59 @@
 /**
  * Public Parking application.
  * Consuming OpenData Iași Portal.
+ *
+ * @extends {DataSet}
+ * @suppress {misplacedTypeAnnotation}
  */
 class PublicParking extends DataSet {
 
     /**
-     * UpPark parking mapping.
-     * @type {{"88": string, "89": string, "90": string, "91": string, "92": string, "82": string, "93": string, "83": string, "94": string, "84": string, "85": string, "86": string, "87": string}}
+     * Dataset application constructor.
+     * @constructor
      */
-    static parkingMapping = {
-        82: 'Moldova',
-        83: 'Mitoc',
-        84: 'Primăria Iași',
-        85: 'Prefectura Iași',
-        86: 'Primăverii',
-        87: 'Podu Roșu',
-        88: 'Teatru',
-        89: 'Victoria',
-        90: 'Hala Centrală',
-        91: 'Independenței',
-        92: 'Golia',
-        93: 'Casa Studenților',
-        94: 'Anastasie Panu'
-    };
+    constructor() {
+        super();
 
-    /**
-     * DataSet API handler.
-     * @type {string}
-     */
-    static dataSetFilter = '64dc-92f1-4b56-9071-1313/22d1082403b780c66b2687f43de783a10c16';
+        /**
+         * Parking mapping.
+         * @type {{88: string, 89: string, 90: string, 91: string, 92: string, 82: string, 93: string, 83: string, 94: string, 84: string, 85: string, 86: string, 87: string}}
+         */
+        this.parkingMapping = {
+            82: 'Moldova',
+            83: 'Mitoc',
+            84: 'Primăria Iași',
+            85: 'Prefectura Iași',
+            86: 'Primăverii',
+            87: 'Podu Roșu',
+            88: 'Teatru',
+            89: 'Victoria',
+            90: 'Hala Centrală',
+            91: 'Independenței',
+            92: 'Golia',
+            93: 'Casa Studenților',
+            94: 'Anastasie Panu'
+        };
 
-    /**
-     * MarkerCluster
-     * @link https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js
-     */
-    static cluster = null;
-    static clusterMarkers = [];
-    static clusterImage = '<svg fill="#4cacf6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><circle cx="120" cy="120" opacity="1" r="70"></circle><circle cx="120" cy="120" opacity=".7" r="90"></circle><circle cx="120" cy="120" opacity=".3" r="110"></circle><circle cx="120" cy="120" opacity=".2" r="130"></circle></svg>';
+        /**
+         * API resource handler for fetching public parking data.
+         * @type {string}
+         */
+        this.dataSetFilter = '64dc-92f1-4b56-9071-1313/22d1082403b780c66b2687f43de783a10c16';
 
-    /**
-     * Selected marker.
-     */
-    static selectedMarker = null;
+        /**
+         * Cluster variables.
+         * @type {null}
+         */
+        this.cluster = null;
+        this.clusterMarkers = [];
+        this.clusterImage = '<svg fill="#4cacf6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><circle cx="120" cy="120" opacity="1" r="70"></circle><circle cx="120" cy="120" opacity=".7" r="90"></circle><circle cx="120" cy="120" opacity=".3" r="110"></circle><circle cx="120" cy="120" opacity=".2" r="130"></circle></svg>';
+
+        /**
+         * Selected marker.
+         * @type {null}
+         */
+        this.selectedMarker = null;
+    }
 
     /**
      * Initialize app.
@@ -62,7 +74,7 @@ class PublicParking extends DataSet {
     init() {
 
         // Refresh data every 5 minute
-        PublicParking.setWatcher(300000, () => {
+        this.setWatcher(300000, () => {
             this.getData();
         });
 
@@ -76,7 +88,7 @@ class PublicParking extends DataSet {
      * @returns {boolean}
      */
     getData(callback = null) {
-        return PublicParking.fetch(PublicParking.dataSetFilter, (json) => {
+        return PublicParking.fetch(this.dataSetFilter, (json) => {
             this.data = json;
             if (callback) {
                 callback();
@@ -139,11 +151,11 @@ class PublicParking extends DataSet {
                     };
 
                     // Add marker
-                    PublicParking.clusterMarkers.push(marker);
+                    this.clusterMarkers.push(marker);
 
                     // Open popup
                     this.markers[parking.sensorId]._ref.addListener('click', () => {
-                        PublicParking.selectedMarker = this.markers[parking.sensorId]._ref;
+                        this.selectedMarker = this.markers[parking.sensorId]._ref;
 
                         // Show InfoWindow
                         CityApp.mapUtils('closePopup');
@@ -153,7 +165,10 @@ class PublicParking extends DataSet {
                             title: this.markers[parking.sensorId].state === 1 ? CityApp.config.labels['parking.parkingFree'] : CityApp.config.labels['parking.parkingOccupied'],
                             titleLabel: `P`,
                             titleLabelClass: [`parking`, `parking-${this.markers[parking.sensorId].state}`],
-                            content: `<ul><li>${CityApp.config.labels['parking.name']}: ${PublicParking.parkingMapping[this.markers[parking.sensorId].parkingId]}</li><li>${CityApp.config.labels['parking.number']}: ${this.markers[parking.sensorId].number}</li></ul><nav><a href="https://www.waze.com/ul?ll=${parseFloat(parking.latitude)}%2C${parseFloat(parking.longitude)}&navigate=yes&zoom=17" target="_blank" class="btn btn-default btn-sm"><span class="ic-mr-5" data-icon="&#xe023;"></span> ${CityApp.config.labels['parking.deepLinkWaze']}</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&destination=${parseFloat(parking.latitude)}%2C${parseFloat(parking.longitude)}" target="_blank" class="btn btn-default btn-sm"><span class="ic-mr-5" data-icon="&#xe02a;"></span> ${CityApp.config.labels['parking.deepLinkMaps']}</a></nav>`
+                            content: `<ul><li>${CityApp.config.labels['parking.name']}: ${PublicParking.parkingMapping[this.markers[parking.sensorId].parkingId]}</li><li>${CityApp.config.labels['parking.number']}: ${this.markers[parking.sensorId].number}</li></ul><nav><a href="https://www.waze.com/ul?ll=${parseFloat(parking.latitude)}%2C${parseFloat(parking.longitude)}&navigate=yes&zoom=17" target="_blank" class="btn btn-default btn-sm"><span class="ic-mr-5" data-icon="&#xe023;"></span> ${CityApp.config.labels['parking.deepLinkWaze']}</a><a href="https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&destination=${parseFloat(parking.latitude)}%2C${parseFloat(parking.longitude)}" target="_blank" class="btn btn-default btn-sm"><span class="ic-mr-5" data-icon="&#xe02a;"></span> ${CityApp.config.labels['parking.deepLinkMaps']}</a></nav>`,
+                            onClose: () => {
+                                this.selectedMarker = null;
+                            }
                         });
 
                         // Show InfoWindow
@@ -187,16 +202,16 @@ class PublicParking extends DataSet {
             this.render();
 
             // Show MarkerCluster
-            if (markerClusterer !== undefined && markerClusterer.MarkerClusterer !== undefined && PublicParking.cluster === null) {
-                PublicParking.cluster = new markerClusterer.MarkerClusterer({
+            if (markerClusterer !== undefined && markerClusterer.MarkerClusterer !== undefined && this.cluster === null) {
+                this.cluster = new markerClusterer.MarkerClusterer({
                     map: CityApp.data.map._ref,
-                    markers: PublicParking.clusterMarkers
+                    markers: this.clusterMarkers
                 });
             }
 
             // Setup watcher
             // Run marker updated rendering (3 minutes)
-            PublicParking.setWatcher(180000, () => {
+            this.setWatcher(180000, () => {
                 this.getData(() => {
                     this.render();
                 });
@@ -221,14 +236,14 @@ class PublicParking extends DataSet {
         this.isVisible = false;
 
         // Return watcher to default value
-        PublicParking.setWatcher(300000, () => {
+        this.setWatcher(300000, () => {
             this.getData();
         });
 
         // Clear cluster
-        if (PublicParking.cluster) {
-            PublicParking.cluster.clearMarkers();
-            PublicParking.cluster = null;
+        if (this.cluster) {
+            this.cluster.clearMarkers();
+            this.cluster = null;
         }
 
         // Callback
