@@ -93,7 +93,7 @@ class WasteCollection extends DataSet {
                 const vehicle = new WasteCollectorVehicle(entry);
 
                 // Validate vehicle
-                if (vehicle.latitude && vehicle.longitude && vehicle.lastUpdateFriendly < 60) {
+                if (vehicle.latitude && vehicle.longitude) {
 
                     if (this.markers[vehicle.id]) {
 
@@ -111,6 +111,7 @@ class WasteCollection extends DataSet {
                         // Custom label for marker
                         const label = document.createElement('div');
                         label.innerText = '♺';
+                        label.style.fontSize = '16px';
 
                         // Custom marker
                         const pin = new google.maps.marker.PinElement({
