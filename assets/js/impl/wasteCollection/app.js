@@ -13,11 +13,14 @@
 
 /**
  * Waste collector vehicle.
+ *
+ * @suppress {misplacedTypeAnnotation}
  */
 class WasteCollectorVehicle {
 
     /**
      * Creates a new instance of Vehicle.
+     * @constructor
      */
     constructor(props) {
 
@@ -36,19 +39,31 @@ class WasteCollectorVehicle {
 /**
  * Waste Collection application.
  * Consuming OpenData Iași Portal.
+ *
+ * @extends {DataSet}
+ * @suppress {misplacedTypeAnnotation}
  */
 class WasteCollection extends DataSet {
 
     /**
-     * DataSet API handler.
-     * @type {string}
+     * Dataset application constructor.
+     * @constructor
      */
-    static dataSet = '544f-2a7a-490a-ac5c-0f79';
+    constructor() {
+        super();
 
-    /**
-     * Selected marker.
-     */
-    static selectedMarker = null;
+        /**
+         * API resource for fetching public transportation data.
+         * @type {string}
+         */
+        this.dataSet = '544f-2a7a-490a-ac5c-0f79';
+
+        /**
+         * Selected marker.
+         * @type {null}
+         */
+        this.selectedMarker = null;
+    }
 
     /**
      * Initialize app.
@@ -56,7 +71,7 @@ class WasteCollection extends DataSet {
     init() {
 
         // Refresh data every 1 minute
-        WasteCollection.setWatcher(60000, () => {
+        this.setWatcher(60000, () => {
             this.getData();
         });
     }
@@ -67,7 +82,7 @@ class WasteCollection extends DataSet {
      * @returns {boolean}
      */
     getData(callback = null) {
-        return WasteCollection.fetch(WasteCollection.dataSet, (json) => {
+        return WasteCollection.fetch(this.dataSet, (json) => {
             this.data = json;
             if (callback) {
                 callback();
@@ -137,7 +152,7 @@ class WasteCollection extends DataSet {
 
                         // Open popup
                         this.markers[vehicle.id]._ref.addListener('click', () => {
-                            WasteCollection.selectedMarker = this.markers[vehicle.id]._ref;
+                            this.selectedMarker = this.markers[vehicle.id]._ref;
 
                             // Close InfoWindow
                             CityApp.mapUtils('closePopup');
@@ -152,7 +167,10 @@ class WasteCollection extends DataSet {
                                     day: "numeric",
                                     hour: "numeric",
                                     minute: "numeric"
-                                })}</p>`
+                                })}</p>`,
+                                onClick: () => {
+                                    this.selectedMarker = null;
+                                }
                             });
 
                             // Show InfoWindow
@@ -184,7 +202,7 @@ class WasteCollection extends DataSet {
 
             // Setup watcher
             // Run marker updated rendering (30 seconds)
-            WasteCollection.setWatcher(30000, () => {
+            this.setWatcher(30000, () => {
                 this.getData(() => {
                     this.render();
                 });
@@ -218,7 +236,7 @@ class WasteCollection extends DataSet {
         this.isVisible = false;
 
         // Return watcher to default value
-        WasteCollection.setWatcher(60000, () => {
+        this.setWatcher(60000, () => {
             this.getData();
         });
 
