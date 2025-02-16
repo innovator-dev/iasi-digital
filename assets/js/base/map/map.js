@@ -670,7 +670,7 @@ class CityApp {
             const centerMapControl = document.createElement('button');
             centerMapControl.classList.add('mapCustomControl');
             centerMapControl.innerHTML = `<span data-icon="&#xe013;"></span>`;
-            centerMapControl.title = this.config.labels.centerOnCity;
+            centerMapControl.title = this.config.labels['centerOnCity'];
             centerMapControl.type = 'button';
 
             centerMapControl.addEventListener('click', (e) => {
@@ -704,14 +704,14 @@ class CityApp {
             myLocationMapControl.setAttribute('data-state', 'hideLocation');
             myLocationMapControl.classList.add('mapCustomControl', 'separator');
             myLocationMapControl.innerHTML = `<span data-icon="&#xe018;"></span>`;
-            myLocationMapControl.title = this.config.labels.showMyLocation;
+            myLocationMapControl.title = this.config.labels['myLocation.showMyLocation'];
             myLocationMapControl.type = 'button';
 
             const myLocationMapPersistentControl = document.createElement('button');
             myLocationMapPersistentControl.setAttribute('data-state', 'hidePersistent');
             myLocationMapPersistentControl.classList.add('mapCustomControl', 'separator', 'hide');
             myLocationMapPersistentControl.innerHTML = `<span data-icon="&#xe015;"></span>`;
-            myLocationMapPersistentControl.title = this.config.labels.showMyLocationPersistent;
+            myLocationMapPersistentControl.title = this.config.labels['myLocation.showMyLocationPersistent'];
             myLocationMapPersistentControl.type = 'button';
 
             myLocationMapPersistentControl.addEventListener('click', () => {
@@ -794,7 +794,7 @@ class CityApp {
                                         lng: parseFloat(this.data.user.coordinates.lng)
                                     },
                                     map: this.data.map._ref,
-                                    title: this.config.labels.myLocation,
+                                    title: this.config.labels['myLocation'],
                                     content: this.data.user.props.pin.element
                                 });
 
@@ -811,7 +811,7 @@ class CityApp {
 
                             // Create InfoWindow
                             CityApp.mapUtils('createPopup', {
-                                title: this.config.labels.myLocation,
+                                title: this.config.labels['myLocation'],
                                 // titleIcon: `&#xe016;`,
                                 titleLabel: '',
                                 titleLabelIcon: `\u{e016}`,
