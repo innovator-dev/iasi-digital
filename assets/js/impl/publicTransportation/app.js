@@ -18,6 +18,8 @@ class Vehicle {
 
     /**
      * Creates a new instance of Vehicle.
+     * @constructor
+     * @suppress {misplacedTypeAnnotation}
      */
     constructor(props) {
 
@@ -53,47 +55,62 @@ class Vehicle {
 /**
  * Public Transportation application.
  * Consuming OpenData Iași Portal.
+ *
+ * @extends {DataSet}
+ * @suppress {misplacedTypeAnnotation}
  */
 class PublicTransportation extends DataSet {
 
     /**
-     * Colors mapping.
+     * Dataset application constructor.
+     * @constructor
      */
-    static routes = {
-        0: ['#a2238e', '#fff'],
-        1: ['#ec008c', '#fff'],
-        3: ['#00a650', '#fff'],
-        5: ['#e77817', '#fff'],
-        6: ['#f9c0c1', '#222'],
-        7: ['#2e3092', '#fff'],
-        8: ['#d2e288', '#222'],
-        9: ['#4ea391', '#fff'],
-        11: ['#f05b72', '#fff'],
-        13: ['#00adef', '#222'],
-    };
+    constructor() {
+        super();
 
-    /**
-     * DataSet API handler.
-     * @type {string}
-     */
-    static dataSet = 'dc2a-cd0a-477f-95f3-1107';
+        /**
+         * Colors mapping
+         * @type {{0: string[], 11: string[], 1: string[], 13: string[], 3: string[], 5: string[], 6: string[], 7: string[], 8: string[], 9: string[]}}
+         */
+        this.routes = {
+            0: ['#a2238e', '#fff'],
+            1: ['#ec008c', '#fff'],
+            3: ['#00a650', '#fff'],
+            5: ['#e77817', '#fff'],
+            6: ['#f9c0c1', '#222'],
+            7: ['#2e3092', '#fff'],
+            8: ['#d2e288', '#222'],
+            9: ['#4ea391', '#fff'],
+            11: ['#f05b72', '#fff'],
+            13: ['#00adef', '#222'],
+        };
 
-    /**
-     * Selected marker.
-     */
-    static selectedMarker = null;
+        /**
+         * API resource for fetching public transportation data.
+         * @type {string}
+         */
+        this.dataSet = 'dc2a-cd0a-477f-95f3-1107';
 
-    /**
-     * Trips.
-     */
-    static dataSetTrips = 'dc2a-cd0a-477f-95f3-1107/52cf25d5c64d1f700b8867cee05112525698';
-    static vehicleTrips = {};
+        /**
+         * Selected marker
+         * @type {null}
+         */
+        this.selectedMarker = null;
 
-    /**
-     * Routes.
-     */
-    static dataSetRoutes = 'https://iasidigital.idealweb.ro/data/publicTransportation/routes.json';
-    static vehicleRoutes = [];
+        /**
+         * API resource for fetching trips.
+         * @type {string}
+         */
+        this.dataSetTrips = 'dc2a-cd0a-477f-95f3-1107/52cf25d5c64d1f700b8867cee05112525698';
+        this.vehicleTrips = {};
+
+        /**
+         * API resource for fetching routes.
+         * @type {string}
+         */
+        this.dataSetRoutes = 'https://iasidigital.idealweb.ro/data/publicTransportation/routes.json';
+        this.vehicleRoutes = [];
+    }
 
     /**
      * Initialize app.
@@ -107,7 +124,7 @@ class PublicTransportation extends DataSet {
         this.getRoutesData();
 
         // Refresh data every 1 minute
-        PublicTransportation.setWatcher(60000, () => {
+        this.setWatcher(60000, () => {
             this.getData();
         });
 
@@ -123,7 +140,7 @@ class PublicTransportation extends DataSet {
      * @returns {boolean}
      */
     getData(callback = null) {
-        return PublicTransportation.fetch(PublicTransportation.dataSet, (json) => {
+        return PublicTransportation.fetch(this.dataSet, (json) => {
             this.data = json;
             if (callback) {
                 callback();
@@ -137,9 +154,9 @@ class PublicTransportation extends DataSet {
      * @returns {boolean}
      */
     getTripsData(callback = null) {
-        return PublicTransportation.fetch(PublicTransportation.dataSetTrips, (json) => {
+        return PublicTransportation.fetch(this.dataSetTrips, (json) => {
             json.forEach((trip) => {
-                PublicTransportation.vehicleTrips[trip.trip_id] = {
+                this.vehicleTrips[trip.trip_id] = {
                     route: trip.route_id,
                     trip: trip.trip_id,
                     headSign: trip.trip_headsign,
@@ -160,10 +177,10 @@ class PublicTransportation extends DataSet {
      */
     getRoutesData(callback = null) {
         return CityApp.getSetData({
-            url: PublicTransportation.dataSetRoutes,
+            url: this.dataSetRoutes,
             callback: (json) => {
                 json.forEach((route) => {
-                    PublicTransportation.vehicleRoutes[route.route_id] = {
+                    this.vehicleRoutes[route.route_id] = {
                         name: route.route_short_name,
                         long: route.route_long_name,
                         type: route.route_type,
@@ -184,7 +201,7 @@ class PublicTransportation extends DataSet {
     render(callback = null) {
 
         // Trips data missing, fetch data and try again
-        if (Object.keys(PublicTransportation.vehicleTrips).length === 0) {
+        if (Object.keys(this.vehicleTrips).length === 0) {
             this.getTripsData();
         }
 
@@ -216,8 +233,8 @@ class PublicTransportation extends DataSet {
                     } else {
 
                         // Get route colors
-                        let [backgroundColor, textColor] = PublicTransportation.routes[vehicle.routeNumber] ?
-                            PublicTransportation.routes[vehicle.routeNumber] : PublicTransportation.routes[0];
+                        let [backgroundColor, textColor] = this.routes[vehicle.routeNumber] ?
+                            this.routes[vehicle.routeNumber] : PublicTransportation.routes[0];
 
                         // Custom label for marker
                         const label = document.createElement('div');
@@ -249,7 +266,7 @@ class PublicTransportation extends DataSet {
 
                         // Open popup
                         this.markers[vehicle.id]._ref.addListener('click', () => {
-                            PublicTransportation.selectedMarker = this.markers[vehicle.id]._ref;
+                            this.selectedMarker = this.markers[vehicle.id]._ref;
 
                             // Close InfoWindow
                             CityApp.mapUtils('closePopup');
@@ -259,7 +276,10 @@ class PublicTransportation extends DataSet {
                                 title: vehicle.routeName,
                                 titleLabel: this.markers[vehicle.id].route,
                                 titleLabelClass: [`route`, `route-${this.markers[vehicle.id].route}`],
-                                content: `<ul><li><strong>${CityApp.config.labels['transportation.direction']}: ${vehicle.tripHeadSign}</strong></li><li title="${vehicle.lastUpdate}">${CityApp.config.labels['transportation.lastUpdate']}: ${CityApp.config.labels['transportation.tkTimeAgo'].replace('{{TIME}}', vehicle.lastUpdateFriendly)}</li><li>${CityApp.config.labels['transportation.identifier']}: ${vehicle.label}</li><li>${CityApp.config.labels['transportation.speed']}: ${CityApp.config.labels['transportation.tkSpeed'].replace('{{SPEED}}', vehicle.speed)}</li></ul>`
+                                content: `<ul><li><strong>${CityApp.config.labels['transportation.direction']}: ${vehicle.tripHeadSign}</strong></li><li title="${vehicle.lastUpdate}">${CityApp.config.labels['transportation.lastUpdate']}: ${CityApp.config.labels['transportation.tkTimeAgo'].replace('{{TIME}}', vehicle.lastUpdateFriendly)}</li><li>${CityApp.config.labels['transportation.identifier']}: ${vehicle.label}</li><li>${CityApp.config.labels['transportation.speed']}: ${CityApp.config.labels['transportation.tkSpeed'].replace('{{SPEED}}', vehicle.speed)}</li></ul>`,
+                                onClose: () => {
+                                    this.selectedMarker = null;
+                                }
                             });
 
                             // Show InfoWindow
@@ -291,7 +311,7 @@ class PublicTransportation extends DataSet {
 
             // Setup watcher
             // Run marker updated rendering (30 seconds)
-            PublicTransportation.setWatcher(30000, () => {
+            this.setWatcher(30000, () => {
                 this.getData(() => {
                     this.render();
                 });
@@ -325,7 +345,7 @@ class PublicTransportation extends DataSet {
         this.isVisible = false;
 
         // Return watcher to default value
-        PublicTransportation.setWatcher(60000, () => {
+        this.setWatcher(60000, () => {
             this.getData();
         });
 
