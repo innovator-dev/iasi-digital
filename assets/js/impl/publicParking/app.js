@@ -51,7 +51,7 @@ class PublicParking extends DataSet {
          * API resource handler for fetching public parking data.
          * @type {string}
          */
-        this.dataSetFilter = '64dc-92f1-4b56-9071-1313/22d1082403b780c66b2687f43de783a10c16';
+        this.dataSetFilter = '5ebe-8407-4964-b9db-1886/07f2c809ce5554b1efe6a15e11c73a5abadc';
 
         /**
          * Cluster variables.

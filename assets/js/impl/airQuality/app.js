@@ -146,7 +146,7 @@ class AirQuality extends DataSet {
          * API resource handler for fetching air quality data.
          * @type {string}
          */
-        this.dataSet = 'cf3f-2309-44d1-8e0c-1137';
+        this.dataSet = '86a2-616b-497a-b2fb-1a71';
 
         /**
          * AQI scale.

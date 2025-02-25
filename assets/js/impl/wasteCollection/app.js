@@ -56,7 +56,7 @@ class WasteCollection extends DataSet {
          * API resource for fetching public transportation data.
          * @type {string}
          */
-        this.dataSet = '544f-2a7a-490a-ac5c-0f79';
+        this.dataSet = 'f8d1-1eb9-460b-85f8-0e18';
 
         /**
          * Selected marker.

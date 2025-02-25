@@ -93,7 +93,7 @@ class PublicTransportation extends DataSet {
          * API resource for fetching public transportation data.
          * @type {string}
          */
-        this.dataSet = 'dc2a-cd0a-477f-95f3-1107';
+        this.dataSet = '299d-6338-47a9-88c3-2a2e/4f88a270a42ccb12ebc1cb85b84525e93ec6';
 
         /**
          * Selected marker
@@ -105,7 +105,7 @@ class PublicTransportation extends DataSet {
          * API resource for fetching trips.
          * @type {string}
          */
-        this.dataSetTrips = 'dc2a-cd0a-477f-95f3-1107/52cf25d5c64d1f700b8867cee05112525698';
+        this.dataSetTrips = '299d-6338-47a9-88c3-2a2e/dc59becae8c49376e853a7997427d3829656';
 
         /**
          * Vehicle trips.
